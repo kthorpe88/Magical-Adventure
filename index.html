@@ -246,7 +246,7 @@
             box-shadow: 0 6px 20px rgba(139, 0, 0, 0.6);
         }
         
-        /* CLEAN SCREEN MANAGEMENT */
+        /* SCREEN MANAGEMENT */
         .screen {
             display: none;
             min-height: 100vh;
@@ -257,7 +257,7 @@
             display: block;
         }
         
-        /* CLEAN SECTION MANAGEMENT - ALL SECTIONS BEHAVE THE SAME */
+        /* SECTION MANAGEMENT */
         .section {
             background: #f4e4c1;
             border: 3px solid #8b4513;
@@ -289,7 +289,7 @@
             text-align: center;
         }
         
-        /* CLEAN REVEAL SYSTEM - ALL CONTENT STARTS HIDDEN */
+        /* THE FIX - REVEAL SYSTEM */
         .section-content {
             display: none;
         }
@@ -756,7 +756,8 @@
             <button class="close-popup-btn" onclick="closeOptionPopup()">✨ Adventure Awaits! ✨</button>
         </div>
     </div>
-      <!-- Hidden Audio Element for Background Music -->
+    
+    <!-- Hidden Audio Element for Background Music -->
     <audio id="backgroundMusic" loop preload="auto">
         <source src="school-of-magic.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
@@ -769,7 +770,7 @@
     
     <div class="container">
         <!-- Sorting Hat Screen -->
-        <div class="screen sorting-hat-screen" id="sortingScreen">
+        <div class="screen sorting-hat-screen active" id="sortingScreen">
             <h1 class="main-title">🎩 The Sorting Hat Awaits 🎩</h1>
             <div class="sorting-hat" onclick="startSorting()">🎩</div>
             <p class="subtitle">Click the Sorting Hat to discover your Hogwarts House, Stephanie!</p>
@@ -1042,16 +1043,20 @@
                     <span>🪄 Interactive Wand from Ollivanders</span>
                 </div>
                 <div class="shopping-item">
-                    <input type="checkbox" id="butterbeer">
-                    <span>🍺 Butterbeer (Regular & Frozen!)</span>
+                    <input type="checkbox" id="wizarding-backpack">
+                    <span>🎒 Wizarding Backpack</span>
                 </div>
                 <div class="shopping-item">
-                    <input type="checkbox" id="chocolate-frogs">
-                    <span>🐸 Chocolate Frogs with Wizard Cards</span>
+                    <input type="checkbox" id="butterbeer">
+                    <span>🍺 Butterbeer (Regular or Frozen!)</span>
                 </div>
                 <div class="shopping-item">
                     <input type="checkbox" id="bertie-botts">
                     <span>🍬 Bertie Bott's Every Flavour Beans</span>
+                </div>
+                <div class="shopping-item">
+                    <input type="checkbox" id="chocolate-frogs">
+                    <span>🐸 Chocolate Frogs with Wizard Cards</span>
                 </div>
                 <div class="shopping-item">
                     <input type="checkbox" id="house-robe">
@@ -1060,10 +1065,6 @@
                 <div class="shopping-item">
                     <input type="checkbox" id="marauders-map">
                     <span>🗺️ Replica Marauder's Map</span>
-                </div>
-                <div class="shopping-item">
-                    <input type="checkbox" id="wizarding-backpack">
-                    <span>🎒 Wizarding Backpack</span>
                 </div>
             </div>
             
@@ -1076,7 +1077,8 @@
                 <div style="text-align: center; margin: 2rem 0;">
                     <button class="reveal-btn" onclick="revealSection('photoAlbum')">📸 Open Your Memory Vault</button>
                 </div>
-                <div class="section-content" id="photoAlbum">                    <div style="text-align: center; margin: 2rem 0;">
+                <div class="section-content" id="photoAlbum">
+                    <div style="text-align: center; margin: 2rem 0;">
                         <h3 style="color: #8b4513; margin-bottom: 1rem;">✨ Capture Your Magical Memories! ✨</h3>
                         <p style="color: #8b4513; margin-bottom: 1rem; font-style: italic;">Click any photo to add your memories, and edit the captions!</p>
                         
@@ -1209,6 +1211,86 @@
                             </div>
                             <input type="text" class="polaroid-caption" value="Kyle & Stephanie's Magic" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo12')">
                         </div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload13').click()">
+                            <div class="polaroid-image" id="photo13">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
+                            </div>
+                            <input type="text" class="polaroid-caption" value="Magical Wand Casting" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo13')">
+                        </div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload14').click()">
+                            <div class="polaroid-image" id="photo14">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
+                            </div>
+                            <input type="text" class="polaroid-caption" value="Flight to Orlando" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo14')">
+                        </div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload15').click()">
+                            <div class="polaroid-image" id="photo15">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
+                            </div>
+                            <input type="text" class="polaroid-caption" value="Hotel Check-in" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo15')">
+                        </div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload16').click()">
+                            <div class="polaroid-image" id="photo16">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
+                            </div>
+                            <input type="text" class="polaroid-caption" value="CityWalk Adventures" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo16')">
+                        </div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload17').click()">
+                            <div class="polaroid-image" id="photo17">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
+                            </div>
+                            <input type="text" class="polaroid-caption" value="Magical Shopping Spree" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo17')">
+                        </div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload18').click()">
+                            <div class="polaroid-image" id="photo18">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
+                            </div>
+                            <input type="text" class="polaroid-caption" value="Magical Meals Together" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo18')">
+                        </div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload19').click()">
+                            <div class="polaroid-image" id="photo19">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
+                            </div>
+                            <input type="text" class="polaroid-caption" value="Sunset Magic Moments" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo19')">
+                        </div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload20').click()">
+                            <div class="polaroid-image" id="photo20">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
+                            </div>
+                            <input type="text" class="polaroid-caption" value="Journey Home Together" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo20')">
+                        </div>
                     </div>
                     
                     <!-- Hidden file inputs -->
@@ -1224,7 +1306,14 @@
                     <input type="file" id="photoUpload10" accept="image/*" onchange="uploadPhoto(this, 'photo10')">
                     <input type="file" id="photoUpload11" accept="image/*" onchange="uploadPhoto(this, 'photo11')">
                     <input type="file" id="photoUpload12" accept="image/*" onchange="uploadPhoto(this, 'photo12')">
-                    </div>
+                    <input type="file" id="photoUpload13" accept="image/*" onchange="uploadPhoto(this, 'photo13')">
+                    <input type="file" id="photoUpload14" accept="image/*" onchange="uploadPhoto(this, 'photo14')">
+                    <input type="file" id="photoUpload15" accept="image/*" onchange="uploadPhoto(this, 'photo15')">
+                    <input type="file" id="photoUpload16" accept="image/*" onchange="uploadPhoto(this, 'photo16')">
+                    <input type="file" id="photoUpload17" accept="image/*" onchange="uploadPhoto(this, 'photo17')">
+                    <input type="file" id="photoUpload18" accept="image/*" onchange="uploadPhoto(this, 'photo18')">
+                    <input type="file" id="photoUpload19" accept="image/*" onchange="uploadPhoto(this, 'photo19')">
+                    <input type="file" id="photoUpload20" accept="image/*" onchange="uploadPhoto(this, 'photo20')">
                 </div>
             </div>
             
@@ -1258,7 +1347,8 @@
         </div>
     </div>
     
-    <script>        // Game state
+    <script>
+        // Game state
         let currentQuestionIndex = 0;
         let houseScores = { gryffindor: 0, hufflepuff: 0, ravenclaw: 0, slytherin: 0 };
         let selectedWand = null;
@@ -1313,83 +1403,18 @@
             { animal: "🐘", name: "Elephant", meaning: "Wisdom, memory, and gentle strength" }
         ];
         
-        // Enhanced PWA Service Worker Registration with Background Sync
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    const registration = await navigator.serviceWorker.register('./sw.js');
-                    console.log('🪄 PWA: Service Worker registered successfully!', registration.scope);
-                    
-                    // Register background sync for offline functionality
-                    if ('sync' in window.ServiceWorkerRegistration.prototype) {
-                        console.log('🪄 PWA: Background sync supported!');
-                        
-                        // Register sync events for different types of data
-                        await registration.sync.register('magical-data-sync');
-                        await registration.sync.register('user-actions-sync');
-                        await registration.sync.register('photo-upload-sync');
-                        
-                        console.log('🪄 PWA: Background sync events registered!');
-                    } else {
-                        console.log('🪄 PWA: Background sync not supported, but app will work fine!');
-                    }
-                    
-                    // Listen for service worker messages
-                    navigator.serviceWorker.addEventListener('message', (event) => {
-                        console.log('🪄 PWA: Message from service worker:', event.data);
-                        
-                        if (event.data.type === 'PHOTO_SYNC_SUCCESS') {
-                            showAchievement('📸 Photo synced successfully! ✨');
-                        }
-                        
-                        if (event.data.type === 'ACTION_SYNC_SUCCESS') {
-                            showAchievement('⚡ Actions synced! Magic preserved! ✨');
-                        }
-                        
-                        if (event.data.type === 'MAGICAL_DATA_SYNC_SUCCESS') {
-                            showAchievement('🪄 All magical data synced! ✨');
-                        }
-                    });
-                    
-                } catch (error) {
-                    console.log('🪄 PWA: Service Worker registration failed (normal for file:// URLs):', error.message);
-                    console.log('🪄 PWA: App will work perfectly without service worker!');
-                }
-            });
-        } else {
-            console.log('🪄 PWA: Service Worker not supported, but app works perfectly!');
-        }
-        
-        // Network status monitoring
-        window.addEventListener('online', () => {
-            showAchievement('🌐 Connection restored! Syncing magical data... ✨');
-            
-            // Trigger background sync when connection is restored
-            if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-                navigator.serviceWorker.ready.then(registration => {
-                    registration.sync.register('magical-data-sync');
-                    registration.sync.register('user-actions-sync');
-                    registration.sync.register('photo-upload-sync');
-                });
-            }
-        });
-
-        window.addEventListener('offline', () => {
-            showAchievement('📡 Connection lost - but magic continues offline! ✨');        });
-        
-        // CLEAN INITIALIZATION
+        // INITIALIZATION
         function initializeMagic() {
             createStars();
             createFloatingEmojis();
-            initializeStorage(); // Initialize persistent storage
-            initializeMusic(); // Initialize background music
+            initializeStorage();
+            initializeMusic();
             showScreen('sortingScreen');
         }
 
         // Initialize persistent storage
         async function initializeStorage() {
             try {
-                // Request persistent storage
                 if ('storage' in navigator && 'persist' in navigator.storage) {
                     const persistent = await navigator.storage.persist();
                     console.log(`🗄️ Persistent storage: ${persistent ? 'granted' : 'denied'}`);
@@ -1399,7 +1424,6 @@
                     }
                 }
 
-                // Initialize IndexedDB
                 await initializeIndexedDB();
             } catch (error) {
                 console.log('🗄️ Storage initialization failed, using localStorage fallback:', error);
@@ -1421,13 +1445,11 @@
                 request.onupgradeneeded = (event) => {
                     const db = event.target.result;
                     
-                    // Create photos store if it doesn't exist
                     if (!db.objectStoreNames.contains('photos')) {
                         const photoStore = db.createObjectStore('photos', { keyPath: 'id' });
                         photoStore.createIndex('timestamp', 'timestamp', { unique: false });
                     }
                     
-                    // Create captions store if it doesn't exist
                     if (!db.objectStoreNames.contains('captions')) {
                         const captionStore = db.createObjectStore('captions', { keyPath: 'id' });
                     }
@@ -1441,18 +1463,16 @@
             });
         }
         
-        // CLEAN SCREEN MANAGEMENT
+        // SCREEN MANAGEMENT
         function showScreen(screenId) {
-            // Hide all screens
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
             });
             
-            // Show target screen
             document.getElementById(screenId).classList.add('active');
         }
         
-        // CLEAN SECTION REVEAL SYSTEM
+        // SECTION REVEAL SYSTEM
         function revealSection(sectionId) {
             const content = document.getElementById(sectionId);
             if (content) {
@@ -1516,7 +1536,8 @@
                 createFloatingEmoji();
             }, 1500);
         }
-          // Sorting functions
+        
+        // Sorting functions
         function startSorting() {
             startMagicalMusic();
             showQuestion();
@@ -1575,50 +1596,42 @@
         function continueToTitle() {
             showScreen('titleScreen');
         }
-          function startJourney() {
+        
+        function startJourney() {
             showScreen('contentScreen');
-            // Load saved photos now that the photo containers exist in the DOM
-            setTimeout(() => loadSavedPhotos(), 100); // Small delay to ensure DOM is ready
+            setTimeout(() => loadSavedPhotos(), 100);
             showAchievement("🎂 Your magical birthday adventure begins! ✨");
         }
         
         function goHome() {
-            // Reset everything
             currentQuestionIndex = 0;
             houseScores = { gryffindor: 0, hufflepuff: 0, ravenclaw: 0, slytherin: 0 };
             selectedWand = null;
             
-            // Reset quiz
             document.getElementById('quizQuestion').style.display = 'none';
             document.getElementById('quizQuestion').innerHTML = `
                 <h3 id="questionText"></h3>
                 <div id="questionOptions"></div>
             `;
             
-            // Reset patronus
             document.getElementById('patronusResult').style.display = 'none';
             
-            // Reset wands
             document.querySelectorAll('.wand').forEach(w => w.classList.remove('selected'));
             document.getElementById('wandMessage').textContent = '';
             
-            // Reset all revealed content
             document.querySelectorAll('.section-content').forEach(content => {
                 content.classList.remove('revealed');
             });
             
-            // Reset shopping list
             document.querySelectorAll('.shopping-item input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
             
-            // Reset options
             document.getElementById('optionA').checked = false;
             document.getElementById('optionB').checked = false;
             document.getElementById('optionAText').classList.remove('crossed-out');
             document.getElementById('optionBText').classList.remove('crossed-out');
             
-            // Close any open popups
             closeOptionPopup();
             
             showScreen('sortingScreen');
@@ -1648,16 +1661,8 @@
             
             document.getElementById('wandMessage').textContent = messages[wandType];
             
-            // Save wand selection with offline sync
             try {
                 localStorage.setItem('selected_wand', wandType);
-                
-                // Register background sync for user actions
-                if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-                    navigator.serviceWorker.ready.then(registration => {
-                        return registration.sync.register('user-actions-sync');
-                    });
-                }
             } catch (error) {
                 console.log('🪄 Wand selection saved in memory only');
             }
@@ -1714,7 +1719,8 @@
                 }, i * 200);
             }
         }
-          // Enhanced photo upload with persistent storage
+        
+        // Enhanced photo upload with persistent storage
         function uploadPhoto(input, photoId) {
             const file = input.files[0];
             if (file) {
@@ -1730,7 +1736,6 @@
                     
                     photoContainer.appendChild(img);
                     
-                    // Save photo with robust persistence
                     await savePhotoData(photoId, e.target.result);
                     
                     showAchievement("📸 Magical Memory Captured! ✨");
@@ -1747,7 +1752,6 @@
                 timestamp: Date.now()
             };
 
-            // Try IndexedDB first
             if (photoDB) {
                 try {
                     const transaction = photoDB.transaction(['photos'], 'readwrite');
@@ -1758,61 +1762,44 @@
                         request.onerror = () => reject(request.error);
                     });
                     console.log(`📸 Photo saved to IndexedDB for ${photoId}`);
-                    
-                    // Register background sync for photo upload when online
-                    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-                        navigator.serviceWorker.ready.then(registration => {
-                            return registration.sync.register('photo-upload-sync');
-                        }).catch(error => {
-                            console.log('📸 Background sync registration failed:', error);
-                        });
-                    }
                     return;
                 } catch (error) {
                     console.log('📸 IndexedDB save failed, trying localStorage:', error);
                 }
             }
 
-            // Fallback to localStorage
             try {
                 localStorage.setItem(`magical_photo_${photoId}`, photoData);
                 console.log(`📸 Photo saved to localStorage for ${photoId}`);
-                
-                // Register background sync for photo upload when online
-                if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-                    navigator.serviceWorker.ready.then(registration => {
-                        return registration.sync.register('photo-upload-sync');
-                    }).catch(error => {
-                        console.log('📸 Background sync registration failed:', error);
-                    });
-                }
             } catch (error) {
                 console.log('📸 Photo saved in memory only (storage not available or full):', error);
                 showAchievement("⚠️ Storage full - photos may not persist after closing app");
             }
-        }        // Load saved photos from IndexedDB or localStorage
+        }
+        
+        // Load saved photos from IndexedDB or localStorage
         async function loadSavedPhotos() {
             console.log('📸 Loading saved photos...');
             
-            for (let i = 1; i <= 12; i++) {
+            for (let i = 1; i <= 20; i++) {
                 const photoId = `photo${i}`;
                 await loadSinglePhoto(photoId);
                 await loadSingleCaption(photoId);
             }
             
             console.log('📸 Finished loading saved photos');
-        }        // Load a single photo from storage
+        }
+        
+        // Load a single photo from storage
         async function loadSinglePhoto(photoId) {
             let savedPhoto = null;
 
-            // Check if the photo container exists first
             const photoContainer = document.getElementById(photoId);
             if (!photoContainer) {
                 console.log(`📸 Photo container ${photoId} not found in DOM - skipping`);
                 return;
             }
 
-            // Try IndexedDB first
             if (photoDB) {
                 try {
                     const transaction = photoDB.transaction(['photos'], 'readonly');
@@ -1827,7 +1814,6 @@
                 }
             }
 
-            // Fallback to localStorage
             if (!savedPhoto) {
                 try {
                     savedPhoto = localStorage.getItem(`magical_photo_${photoId}`);
@@ -1837,7 +1823,6 @@
                 }
             }
 
-            // Display the photo if found
             if (savedPhoto) {
                 photoContainer.innerHTML = '';
                 
@@ -1855,7 +1840,6 @@
         async function loadSingleCaption(photoId) {
             let savedCaption = null;
 
-            // Try IndexedDB first
             if (photoDB) {
                 try {
                     const transaction = photoDB.transaction(['captions'], 'readonly');
@@ -1871,7 +1855,6 @@
                 }
             }
 
-            // Fallback to localStorage
             if (!savedCaption) {
                 try {
                     savedCaption = localStorage.getItem(`magical_caption_${photoId}`);
@@ -1881,7 +1864,6 @@
                 }
             }
 
-            // Set the caption if found
             if (savedCaption) {
                 const photoElement = document.getElementById(photoId);
                 if (photoElement && photoElement.parentElement) {
@@ -1892,7 +1874,8 @@
                 }
             }
         }
-          // Save polaroid caption with robust persistence
+        
+        // Save polaroid caption with robust persistence
         async function savePolaroidCaption(input, photoId) {
             const captionRecord = {
                 id: photoId,
@@ -1900,7 +1883,6 @@
                 timestamp: Date.now()
             };
 
-            // Try IndexedDB first
             if (photoDB) {
                 try {
                     const transaction = photoDB.transaction(['captions'], 'readwrite');
@@ -1917,7 +1899,6 @@
                 }
             }
 
-            // Fallback to localStorage
             try {
                 localStorage.setItem(`magical_caption_${photoId}`, input.value);
                 console.log(`💬 Caption saved to localStorage for ${photoId}: "${input.value}"`);
@@ -1940,7 +1921,6 @@
                 
                 otherText.classList.add('crossed-out');
                 
-                // Show popup for selected option
                 showOptionPopup(option);
                 
                 const optionName = option === 'A' ? 'Universal Studios Return' : 'Orlando Exploration';
@@ -1963,7 +1943,6 @@
             document.getElementById('optionBPopup').classList.remove('show');
         }
         
-        // Enhanced achievement system with offline queuing
         function showAchievement(message) {
             const achievement = document.createElement('div');
             achievement.className = 'achievement';
@@ -1973,25 +1952,6 @@
             setTimeout(() => {
                 achievement.remove();
             }, 4000);
-            
-            // Queue achievement for sync when online
-            try {
-                const achievements = JSON.parse(localStorage.getItem('queued_achievements') || '[]');
-                achievements.push({
-                    message: message,
-                    timestamp: Date.now()
-                });
-                localStorage.setItem('queued_achievements', JSON.stringify(achievements));
-                
-                // Register background sync for magical data
-                if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-                    navigator.serviceWorker.ready.then(registration => {
-                        return registration.sync.register('magical-data-sync');
-                    });
-                }
-            } catch (error) {
-                console.log('🏆 Achievement queued in memory only');
-            }
         }
         
         // Music Control Functions
@@ -1999,7 +1959,6 @@
             backgroundMusic = document.getElementById('backgroundMusic');
             updateMusicButton();
             
-            // Handle music loading errors gracefully
             backgroundMusic.addEventListener('error', () => {
                 console.log('🎵 Background music file not found - continuing without music');
                 document.getElementById('musicBtn').style.display = 'none';
@@ -2009,7 +1968,6 @@
                 console.log('🎵 Background music loaded and ready!');
             });
             
-            // Add event listeners to track actual audio state
             backgroundMusic.addEventListener('play', () => {
                 musicPlaying = true;
                 updateMusicButton();
@@ -2021,7 +1979,8 @@
                 updateMusicButton();
                 console.log('🎵 Music paused');
             });
-              backgroundMusic.addEventListener('ended', () => {
+            
+            backgroundMusic.addEventListener('ended', () => {
                 musicPlaying = false;
                 updateMusicButton();
                 console.log('🎵 Music ended');
@@ -2033,7 +1992,6 @@
                 backgroundMusic.play().catch(error => {
                     console.log('🎵 Music autoplay blocked - user can start manually');
                 });
-                // State will be updated by play event listener
             }
         }
         
@@ -2042,12 +2000,10 @@
             
             if (musicPlaying) {
                 backgroundMusic.pause();
-                // State will be updated by pause event listener
             } else {
                 backgroundMusic.play().catch(error => {
                     console.log('🎵 Could not play music:', error);
                 });
-                // State will be updated by play event listener
             }
         }
         
@@ -2059,15 +2015,15 @@
             }
         }
 
-        // Initialize on load
-        window.addEventListener('load', initializeMagic);
-        
         // Manual photo reload function for testing
         async function reloadAllPhotos() {
             console.log('🔄 Manually reloading all photos...');
             await loadSavedPhotos();
             showAchievement('🔄 Photos reloaded from storage! ✨');
         }
+
+        // Initialize on load
+        window.addEventListener('load', initializeMagic);
     </script>
 </body>
 </html>
