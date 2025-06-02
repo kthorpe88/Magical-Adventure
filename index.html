@@ -485,6 +485,7 @@
             justify-content: center;
             gap: 30px;
             margin: 2rem 0;
+            flex-wrap: wrap;
         }
         
         .wand {
@@ -684,6 +685,19 @@
             
             .container {
                 padding: 10px;
+            }
+            
+            .wand-selection {
+                gap: 15px;
+            }
+            
+            .polaroid {
+                margin: 0.5rem;
+            }
+            
+            .polaroid-image {
+                width: 150px;
+                height: 112px;
             }
         }
     </style>
@@ -1047,7 +1061,7 @@
                 </div>
             </div>
             
-            <!-- MAGICAL MEMORY ALBUM SECTION - NOW CLEAN -->
+            <!-- MAGICAL MEMORY ALBUM SECTION -->
             <div class="section">
                 <h2 class="section-title">📸 Magical Memory Album 📸</h2>
                 <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
@@ -1061,187 +1075,130 @@
                         <h3 style="color: #8b4513; margin-bottom: 1rem;">✨ Capture Your Magical Memories! ✨</h3>
                         <p style="color: #8b4513; margin-bottom: 1rem; font-style: italic;">Click any photo to add your memories, and edit the captions!</p>
                     
-                    <div class="polaroid" onclick="document.getElementById('photoUpload1').click()">
-                        <div class="polaroid-image" id="photo1">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                    <!-- Photo Grid -->
+                    <div style="text-align: center;">
+                        <div class="polaroid" onclick="document.getElementById('photoUpload1').click()">
+                            <div class="polaroid-image" id="photo1">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Hogwarts Castle at Universal" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo1')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Hogwarts Castle at Universal" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload2').click()">
-                        <div class="polaroid-image" id="photo2">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload2').click()">
+                            <div class="polaroid-image" id="photo2">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Hogwarts Express Journey" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo2')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Hogwarts Express Journey" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload3').click()">
-                        <div class="polaroid-image" id="photo3">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload3').click()">
+                            <div class="polaroid-image" id="photo3">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Ollivanders Wand Shop" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo3')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Ollivanders Wand Shop" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload4').click()">
-                        <div class="polaroid-image" id="photo4">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload4').click()">
+                            <div class="polaroid-image" id="photo4">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Butterbeer in Hogsmeade" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo4')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Butterbeer in Hogsmeade" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload5').click()">
-                        <div class="polaroid-image" id="photo5">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload5').click()">
+                            <div class="polaroid-image" id="photo5">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Diagon Alley Adventures" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo5')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Diagon Alley Adventures" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload6').click()">
-                        <div class="polaroid-image" id="photo6">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload6').click()">
+                            <div class="polaroid-image" id="photo6">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Epic Universe Magic" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo6')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Epic Universe Magic" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload7').click()">
-                        <div class="polaroid-image" id="photo7">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload7').click()">
+                            <div class="polaroid-image" id="photo7">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Three Broomsticks Feast" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo7')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Three Broomsticks Feast" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload8').click()">
-                        <div class="polaroid-image" id="photo8">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload8').click()">
+                            <div class="polaroid-image" id="photo8">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Forbidden Journey Ride" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo8')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Forbidden Journey Ride" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload9').click()">
-                        <div class="polaroid-image" id="photo9">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload9').click()">
+                            <div class="polaroid-image" id="photo9">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Gringotts Bank Adventure" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo9')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Gringotts Bank Adventure" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload10').click()">
-                        <div class="polaroid-image" id="photo10">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload10').click()">
+                            <div class="polaroid-image" id="photo10">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Quidditch Pitch Fun" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo10')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Quidditch Pitch Fun" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload11').click()">
-                        <div class="polaroid-image" id="photo11">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload11').click()">
+                            <div class="polaroid-image" id="photo11">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Birthday Fireworks Show" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo11')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Birthday Fireworks Show" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload12').click()">
-                        <div class="polaroid-image" id="photo12">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
+                        
+                        <div class="polaroid" onclick="document.getElementById('photoUpload12').click()">
+                            <div class="polaroid-image" id="photo12">
+                                <div style="text-align: center; color: #888; font-size: 1rem;">
+                                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                    <div>Tap to add photo</div>
+                                </div>
                             </div>
+                            <input type="text" class="polaroid-caption" value="Kyle & Stephanie's Magic" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo12')">
                         </div>
-                        <input type="text" class="polaroid-caption" value="Kyle & Stephanie's Magic" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload13').click()">
-                        <div class="polaroid-image" id="photo13">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
-                            </div>
-                        </div>
-                        <input type="text" class="polaroid-caption" value="Hagrid's Hut Visit" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload14').click()">
-                        <div class="polaroid-image" id="photo14">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
-                            </div>
-                        </div>
-                        <input type="text" class="polaroid-caption" value="Ministry of Magic Fun" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload15').click()">
-                        <div class="polaroid-image" id="photo15">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
-                            </div>
-                        </div>
-                        <input type="text" class="polaroid-caption" value="Sorting Hat Ceremony" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload16').click()">
-                        <div class="polaroid-image" id="photo16">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
-                            </div>
-                        </div>
-                        <input type="text" class="polaroid-caption" value="Chocolate Frog Shopping" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload17').click()">
-                        <div class="polaroid-image" id="photo17">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
-                            </div>
-                        </div>
-                        <input type="text" class="polaroid-caption" value="Dragon Challenge Ride" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload18').click()">
-                        <div class="polaroid-image" id="photo18">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
-                            </div>
-                        </div>
-                        <input type="text" class="polaroid-caption" value="Great Hall Dining" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload19').click()">
-                        <div class="polaroid-image" id="photo19">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
-                            </div>
-                        </div>
-                        <input type="text" class="polaroid-caption" value="Magical Creature Encounters" placeholder="Add your caption..." onclick="event.stopPropagation()">
-                    </div>
-                    <div class="polaroid" onclick="document.getElementById('photoUpload20').click()">
-                        <div class="polaroid-image" id="photo20">
-                            <div style="text-align: center; color: #888; font-size: 1rem;">
-                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
-                                <div>Tap to add photo</div>
-                            </div>
-                        </div>
-                        <input type="text" class="polaroid-caption" value="Our Magical Love Story" placeholder="Add your caption..." onclick="event.stopPropagation()">
                     </div>
                     
+                    <!-- Hidden file inputs -->
                     <input type="file" id="photoUpload1" accept="image/*" onchange="uploadPhoto(this, 'photo1')">
                     <input type="file" id="photoUpload2" accept="image/*" onchange="uploadPhoto(this, 'photo2')">
                     <input type="file" id="photoUpload3" accept="image/*" onchange="uploadPhoto(this, 'photo3')">
@@ -1254,19 +1211,11 @@
                     <input type="file" id="photoUpload10" accept="image/*" onchange="uploadPhoto(this, 'photo10')">
                     <input type="file" id="photoUpload11" accept="image/*" onchange="uploadPhoto(this, 'photo11')">
                     <input type="file" id="photoUpload12" accept="image/*" onchange="uploadPhoto(this, 'photo12')">
-                    <input type="file" id="photoUpload13" accept="image/*" onchange="uploadPhoto(this, 'photo13')">
-                    <input type="file" id="photoUpload14" accept="image/*" onchange="uploadPhoto(this, 'photo14')">
-                    <input type="file" id="photoUpload15" accept="image/*" onchange="uploadPhoto(this, 'photo15')">
-                    <input type="file" id="photoUpload16" accept="image/*" onchange="uploadPhoto(this, 'photo16')">
-                    <input type="file" id="photoUpload17" accept="image/*" onchange="uploadPhoto(this, 'photo17')">
-                    <input type="file" id="photoUpload18" accept="image/*" onchange="uploadPhoto(this, 'photo18')">
-                    <input type="file" id="photoUpload19" accept="image/*" onchange="uploadPhoto(this, 'photo19')">
-                    <input type="file" id="photoUpload20" accept="image/*" onchange="uploadPhoto(this, 'photo20')">
                     </div>
                 </div>
             </div>
             
-            <!-- BUTTERBEER RECIPE SECTION - NOW CLEAN -->
+            <!-- BUTTERBEER RECIPE SECTION -->
             <div class="section">
                 <h2 class="section-title">🍺 Secret Butterbeer Recipe! 🍺</h2>
                 <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
@@ -1372,6 +1321,7 @@
         function initializeMagic() {
             createStars();
             createFloatingEmojis();
+            loadSavedPhotos(); // Load any previously saved photos
             showScreen('sortingScreen');
         }
         
@@ -1634,7 +1584,7 @@
             }
         }
         
-        // Photo upload
+        // Photo upload with localStorage persistence
         function uploadPhoto(input, photoId) {
             const file = input.files[0];
             if (file) {
@@ -1649,9 +1599,67 @@
                     img.alt = 'Magical Memory';
                     
                     photoContainer.appendChild(img);
+                    
+                    // Save photo to localStorage with better error handling
+                    try {
+                        localStorage.setItem(`magical_photo_${photoId}`, e.target.result);
+                        console.log(`📸 Photo saved for ${photoId}`);
+                    } catch (error) {
+                        console.log('📸 Photo saved in memory only (localStorage not available or full)');
+                        // Could implement a fallback storage method here if needed
+                    }
+                    
                     showAchievement("📸 Magical Memory Captured! ✨");
                 };
                 reader.readAsDataURL(file);
+            }
+        }
+        
+        // Load saved photos from localStorage
+        function loadSavedPhotos() {
+            for (let i = 1; i <= 12; i++) { // Updated to only load 12 photos as shown in the DOM
+                const photoId = `photo${i}`;
+                try {
+                    const savedPhoto = localStorage.getItem(`magical_photo_${photoId}`);
+                    if (savedPhoto) {
+                        const photoContainer = document.getElementById(photoId);
+                        if (photoContainer) {
+                            photoContainer.innerHTML = '';
+                            
+                            const img = document.createElement('img');
+                            img.src = savedPhoto;
+                            img.className = 'uploaded-image';
+                            img.alt = 'Magical Memory';
+                            
+                            photoContainer.appendChild(img);
+                            console.log(`📸 Photo restored for ${photoId}`);
+                        }
+                    }
+                    
+                    // Load saved caption
+                    const savedCaption = localStorage.getItem(`magical_caption_${photoId}`);
+                    if (savedCaption) {
+                        const photoElement = document.getElementById(photoId);
+                        if (photoElement && photoElement.parentElement) {
+                            const captionInput = photoElement.parentElement.querySelector('.polaroid-caption');
+                            if (captionInput) {
+                                captionInput.value = savedCaption;
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.log(`📸 Could not load saved data for ${photoId}`);
+                }
+            }
+        }
+        
+        // Save polaroid caption to localStorage
+        function savePolaroidCaption(input, photoId) {
+            try {
+                localStorage.setItem(`magical_caption_${photoId}`, input.value);
+                console.log(`💬 Caption saved for ${photoId}: "${input.value}"`);
+            } catch (error) {
+                console.log('💬 Caption saved in memory only (localStorage not available)');
             }
         }
         
