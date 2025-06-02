@@ -756,8 +756,14 @@
             <button class="close-popup-btn" onclick="closeOptionPopup()">✨ Adventure Awaits! ✨</button>
         </div>
     </div>
+      <!-- Hidden Audio Element for Background Music -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="school-of-magic.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
     
     <div class="navigation">
+        <button class="nav-btn" onclick="toggleMusic()" title="Toggle Background Music" id="musicBtn">🎵</button>
         <button class="nav-btn" onclick="goHome()" title="Back to Start">🏠</button>
     </div>
     
@@ -1245,11 +1251,14 @@
         </div>
     </div>
     
-    <script>
-        // Game state
+    <script>        // Game state
         let currentQuestionIndex = 0;
         let houseScores = { gryffindor: 0, hufflepuff: 0, ravenclaw: 0, slytherin: 0 };
         let selectedWand = null;
+        
+        // Music state
+        let musicPlaying = false;
+        let backgroundMusic = null;
         
         const houses = [
             { name: 'GRYFFINDOR', emoji: '🦁', class: 'gryffindor' },
@@ -1360,13 +1369,13 @@
 
         window.addEventListener('offline', () => {
             showAchievement('📡 Connection lost - but magic continues offline! ✨');
-        });
-          // CLEAN INITIALIZATION
+        });          // CLEAN INITIALIZATION
         function initializeMagic() {
             createStars();
             createFloatingEmojis();
             initializeStorage(); // Initialize persistent storage
             loadSavedPhotos(); // Load any previously saved photos
+            initializeMusic(); // Initialize background music
             showScreen('sortingScreen');
         }
 
@@ -1500,9 +1509,9 @@
                 createFloatingEmoji();
             }, 1500);
         }
-        
-        // Sorting functions
+          // Sorting functions
         function startSorting() {
+            startMagicalMusic();
             showQuestion();
         }
         
@@ -1972,6 +1981,58 @@
             }
         }
         
+        // Music Control Functions
+        function initializeMusic() {
+            backgroundMusic = document.getElementById('backgroundMusic');
+            updateMusicButton();
+            
+            // Handle music loading errors gracefully
+            backgroundMusic.addEventListener('error', () => {
+                console.log('🎵 Background music file not found - continuing without music');
+                document.getElementById('musicBtn').style.display = 'none';
+            });
+            
+            backgroundMusic.addEventListener('canplaythrough', () => {
+                console.log('🎵 Background music loaded and ready!');
+            });
+        }
+        
+        function startMagicalMusic() {
+            if (backgroundMusic && !musicPlaying) {
+                backgroundMusic.play().then(() => {
+                    musicPlaying = true;
+                    updateMusicButton();
+                    console.log('🎵 Magical music started!');
+                }).catch(error => {
+                    console.log('🎵 Music autoplay blocked - user can start manually');
+                });
+            }
+        }
+        
+        function toggleMusic() {
+            if (!backgroundMusic) return;
+            
+            if (musicPlaying) {
+                backgroundMusic.pause();
+                musicPlaying = false;
+            } else {
+                backgroundMusic.play().then(() => {
+                    musicPlaying = true;
+                }).catch(error => {
+                    console.log('🎵 Could not play music:', error);
+                });
+            }
+            updateMusicButton();
+        }
+        
+        function updateMusicButton() {
+            const musicBtn = document.getElementById('musicBtn');
+            if (musicBtn) {
+                musicBtn.textContent = musicPlaying ? '🔇' : '🎵';
+                musicBtn.title = musicPlaying ? 'Mute Background Music' : 'Play Background Music';
+            }
+        }
+
         // Initialize on load
         window.addEventListener('load', initializeMagic);
     </script>
