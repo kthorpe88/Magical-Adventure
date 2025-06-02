@@ -1076,10 +1076,17 @@
                 <div style="text-align: center; margin: 2rem 0;">
                     <button class="reveal-btn" onclick="revealSection('photoAlbum')">📸 Open Your Memory Vault</button>
                 </div>
-                <div class="section-content" id="photoAlbum">
-                    <div style="text-align: center; margin: 2rem 0;">
+                <div class="section-content" id="photoAlbum">                    <div style="text-align: center; margin: 2rem 0;">
                         <h3 style="color: #8b4513; margin-bottom: 1rem;">✨ Capture Your Magical Memories! ✨</h3>
                         <p style="color: #8b4513; margin-bottom: 1rem; font-style: italic;">Click any photo to add your memories, and edit the captions!</p>
+                        
+                        <!-- Reload Button for Testing -->
+                        <div style="margin: 1rem 0;">
+                            <button class="reveal-btn" onclick="reloadAllPhotos()" style="font-size: 0.9rem; padding: 0.5rem 1rem;">
+                                🔄 Reload Photos
+                            </button>
+                        </div>
+                    </div>
                     
                     <!-- Photo Grid -->
                     <div style="text-align: center;">
@@ -1368,13 +1375,13 @@
         });
 
         window.addEventListener('offline', () => {
-            showAchievement('📡 Connection lost - but magic continues offline! ✨');
-        });          // CLEAN INITIALIZATION
+            showAchievement('📡 Connection lost - but magic continues offline! ✨');        });
+        
+        // CLEAN INITIALIZATION
         function initializeMagic() {
             createStars();
             createFloatingEmojis();
             initializeStorage(); // Initialize persistent storage
-            loadSavedPhotos(); // Load any previously saved photos
             initializeMusic(); // Initialize background music
             showScreen('sortingScreen');
         }
@@ -1568,9 +1575,10 @@
         function continueToTitle() {
             showScreen('titleScreen');
         }
-        
-        function startJourney() {
+          function startJourney() {
             showScreen('contentScreen');
+            // Load saved photos now that the photo containers exist in the DOM
+            setTimeout(() => loadSavedPhotos(), 100); // Small delay to ensure DOM is ready
             showAchievement("🎂 Your magical birthday adventure begins! ✨");
         }
         
@@ -1782,19 +1790,27 @@
                 console.log('📸 Photo saved in memory only (storage not available or full):', error);
                 showAchievement("⚠️ Storage full - photos may not persist after closing app");
             }
-        }
-          // Load saved photos from IndexedDB or localStorage
+        }        // Load saved photos from IndexedDB or localStorage
         async function loadSavedPhotos() {
+            console.log('📸 Loading saved photos...');
+            
             for (let i = 1; i <= 12; i++) {
                 const photoId = `photo${i}`;
                 await loadSinglePhoto(photoId);
                 await loadSingleCaption(photoId);
             }
-        }
-
-        // Load a single photo from storage
+            
+            console.log('📸 Finished loading saved photos');
+        }        // Load a single photo from storage
         async function loadSinglePhoto(photoId) {
             let savedPhoto = null;
+
+            // Check if the photo container exists first
+            const photoContainer = document.getElementById(photoId);
+            if (!photoContainer) {
+                console.log(`📸 Photo container ${photoId} not found in DOM - skipping`);
+                return;
+            }
 
             // Try IndexedDB first
             if (photoDB) {
@@ -1823,18 +1839,15 @@
 
             // Display the photo if found
             if (savedPhoto) {
-                const photoContainer = document.getElementById(photoId);
-                if (photoContainer) {
-                    photoContainer.innerHTML = '';
-                    
-                    const img = document.createElement('img');
-                    img.src = savedPhoto;
-                    img.className = 'uploaded-image';
-                    img.alt = 'Magical Memory';
-                    
-                    photoContainer.appendChild(img);
-                    console.log(`📸 Photo restored for ${photoId}`);
-                }
+                photoContainer.innerHTML = '';
+                
+                const img = document.createElement('img');
+                img.src = savedPhoto;
+                img.className = 'uploaded-image';
+                img.alt = 'Magical Memory';
+                
+                photoContainer.appendChild(img);
+                console.log(`📸 Photo restored for ${photoId}`);
             }
         }
 
@@ -2035,6 +2048,13 @@
 
         // Initialize on load
         window.addEventListener('load', initializeMagic);
+        
+        // Manual photo reload function for testing
+        async function reloadAllPhotos() {
+            console.log('🔄 Manually reloading all photos...');
+            await loadSavedPhotos();
+            showAchievement('🔄 Photos reloaded from storage! ✨');
+        }
     </script>
 </body>
 </html>

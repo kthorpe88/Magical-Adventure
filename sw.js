@@ -1,31 +1,28 @@
-const CACHE_NAME = 'magical-adventure-v2';
+const CACHE_NAME = 'magical-adventure-v3';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
-  './android-launchericon-48-48.png',
-  './android-launchericon-72-72.png',
-  './android-launchericon-96-96.png',
-  './android-launchericon-144-144.png',
-  './android-launchericon-192-192.png',
-  './android-launchericon-512-512.png',
-  './android-launchericon-192-192-maskable.png',
-  './android-launchericon-512-512-maskable.png',
+  './school-of-magic.mp3',
+  './icon-192-any.png',
+  './icon-192-maskable.png',
+  './icon-512-any.png',
+  './icon-512-maskable.png',
   'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap'
 ];
 
 // Install Service Worker
 self.addEventListener('install', (event) => {
-  console.log('🪄 Service Worker: Installing...');
+  console.log('🪄 Service Worker: Installing v3 with music support...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('🪄 Service Worker: Caching files');
+        console.log('🪄 Service Worker: Caching files including music');
         return cache.addAll(urlsToCache);
       })
       .then(() => {
-        console.log('🪄 Service Worker: Installation complete');
-        return self.skipWaiting();
+        console.log('🪄 Service Worker: Installation complete - forcing immediate activation');
+        return self.skipWaiting(); // Force immediate activation
       })
       .catch((error) => {
         console.error('🪄 Service Worker: Installation failed', error);
@@ -35,7 +32,7 @@ self.addEventListener('install', (event) => {
 
 // Activate Service Worker
 self.addEventListener('activate', (event) => {
-  console.log('🪄 Service Worker: Activating...');
+  console.log('🪄 Service Worker: Activating v3 with music support...');
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
@@ -49,8 +46,8 @@ self.addEventListener('activate', (event) => {
         );
       })
       .then(() => {
-        console.log('🪄 Service Worker: Activation complete');
-        return self.clients.claim();
+        console.log('🪄 Service Worker: Activation complete - taking control immediately');
+        return self.clients.claim(); // Take control of all clients immediately
       })
   );
 });
@@ -268,11 +265,10 @@ async function notifyClients(message) {
 // Push Notifications
 self.addEventListener('push', (event) => {
   console.log('🪄 Service Worker: Push message received');
-  
-  const options = {
+    const options = {
     body: event.data ? event.data.text() : 'New magical adventure awaits! ✨',
-    icon: '/android-launchericon-192-192.png',
-    badge: '/android-launchericon-96-96.png',
+    icon: '/icon-192-any.png',
+    badge: '/icon-192-maskable.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -282,12 +278,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'open',
         title: 'Open Adventure',
-        icon: '/android-launchericon-72-72.png'
+        icon: '/icon-192-any.png'
       },
       {
         action: 'close',
         title: 'Close',
-        icon: '/android-launchericon-48-48.png'
+        icon: '/icon-192-maskable.png'
       }
     ]
   };
