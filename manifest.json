@@ -1,7 +1,6 @@
 {
   "name": "Stephanie's Magical Birthday Adventure",
   "short_name": "Magical Adventure",
-  "id": "/",
   "description": "Stephanie's magical Harry Potter birthday adventure to Universal Studios Orlando",
   "start_url": "/",
   "display": "standalone",
