@@ -11,32 +11,8 @@
   "lang": "en-US",
   "icons": [
     {
-      "src": "/icon-72-any.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-96-any.png",
+      "src": "/icon-96.png",
       "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-128-any.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-144-any.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-512-any.png",
-      "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
@@ -47,13 +23,7 @@
       "purpose": "any"
     },
     {
-      "src": "/icon-384-any.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-512x512.png",
+      "src": "/icon-512-any.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
