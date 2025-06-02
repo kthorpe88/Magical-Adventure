@@ -2008,17 +2008,32 @@
             backgroundMusic.addEventListener('canplaythrough', () => {
                 console.log('🎵 Background music loaded and ready!');
             });
+            
+            // Add event listeners to track actual audio state
+            backgroundMusic.addEventListener('play', () => {
+                musicPlaying = true;
+                updateMusicButton();
+                console.log('🎵 Music started playing');
+            });
+            
+            backgroundMusic.addEventListener('pause', () => {
+                musicPlaying = false;
+                updateMusicButton();
+                console.log('🎵 Music paused');
+            });
+              backgroundMusic.addEventListener('ended', () => {
+                musicPlaying = false;
+                updateMusicButton();
+                console.log('🎵 Music ended');
+            });
         }
         
         function startMagicalMusic() {
             if (backgroundMusic && !musicPlaying) {
-                backgroundMusic.play().then(() => {
-                    musicPlaying = true;
-                    updateMusicButton();
-                    console.log('🎵 Magical music started!');
-                }).catch(error => {
+                backgroundMusic.play().catch(error => {
                     console.log('🎵 Music autoplay blocked - user can start manually');
                 });
+                // State will be updated by play event listener
             }
         }
         
@@ -2027,15 +2042,13 @@
             
             if (musicPlaying) {
                 backgroundMusic.pause();
-                musicPlaying = false;
+                // State will be updated by pause event listener
             } else {
-                backgroundMusic.play().then(() => {
-                    musicPlaying = true;
-                }).catch(error => {
+                backgroundMusic.play().catch(error => {
                     console.log('🎵 Could not play music:', error);
                 });
+                // State will be updated by play event listener
             }
-            updateMusicButton();
         }
         
         function updateMusicButton() {
