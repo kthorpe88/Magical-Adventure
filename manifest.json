@@ -1,6 +1,7 @@
 {
   "name": "Stephanie's Magical Birthday Adventure",
   "short_name": "Magical Adventure",
+  "id": "/",
   "description": "Stephanie's magical Harry Potter birthday adventure to Universal Studios Orlando",
   "start_url": "/",
   "display": "standalone",
@@ -9,6 +10,11 @@
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en-US",
+  "dir": "ltr",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-96.png",
