@@ -1,53 +1,1766 @@
-{
-  "name": "Magical Birthday Adventure",
-  "short_name": "Magical Adventure",
-  "description": "Stephanie's magical Harry Potter birthday adventure to Universal Studios Orlando",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#1a1a2e",
-  "orientation": "portrait-primary",
-  "scope": "./",
-  "icons": [
-    {
-      "src": "./icon-192-any.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icon-512-any.png",
-      "sizes": "512x512", 
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icon-192-maskable.png",
-      "sizes": "192x192",
-      "type": "image/png", 
-      "purpose": "maskable"
-    },
-    {
-      "src": "./icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "categories": ["entertainment", "lifestyle"],
-  "shortcuts": [
-    {
-      "name": "Start Adventure",
-      "short_name": "Adventure", 
-      "description": "Begin your magical journey",
-      "url": "./index.html",
-      "icons": [
-        {
-          "src": "./icon-96.png",
-          "sizes": "96x96",
-          "type": "image/png"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Magical Birthday Adventure Awaits</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Magical Adventure">
+    <meta name="description" content="Stephanie's magical Harry Potter birthday adventure to Universal Studios Orlando">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiBmaWxsPSIjMWExYTJlIi8+Cjx0ZXh0IHg9Ijk2IiB5PSI5NiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9Ijc0IiBmaWxsPSIjZDRhZjM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+8J+qhDwvdGV4dD4KPC9zdmc+">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-      ]
-    }
-  ]
-}
+        
+        .option-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            animation: fadeInOverlay 0.5s ease-in;
+        }
+        
+        .option-popup-overlay.show {
+            display: flex;
+        }
+        
+        .option-popup {
+            background: #f4e4c1;
+            border: 3px solid #8b4513;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            font-family: 'Crimson Text', serif;
+            color: #2c1810;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: letterAppear 0.8s ease-out;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(139, 69, 19, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .option-popup h3 {
+            font-family: 'Cinzel', serif;
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+        
+        .close-popup-btn {
+            background: linear-gradient(45deg, #8b4513, #d4af37);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+        
+        .close-popup-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.4);
+        }
+        
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes letterAppear {
+            0% {
+                transform: scale(0.3) rotate(-10deg);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.05) rotate(2deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+        
+        body {
+            font-family: 'Crimson Text', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #16213e 75%, #1a1a2e 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #f4f4f4;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .floating-emojis {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            overflow: hidden;
+        }
+        
+        .floating-emoji {
+            position: absolute;
+            font-size: 2.5rem;
+            opacity: 0.8;
+            animation: float 12s infinite linear;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.8;
+                transform: translateY(95vh) rotate(18deg) scale(1);
+            }
+            50% {
+                transform: translateY(50vh) rotate(180deg) scale(0.9);
+            }
+            95% {
+                opacity: 0.8;
+                transform: translateY(5vh) rotate(342deg) scale(1);
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg) scale(0.8);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .title-screen {
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .main-title {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 1rem;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 10px #d4af37; }
+            to { text-shadow: 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px #d4af37, 0 0 30px #d4af37; }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #b8860b;
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+        
+        .start-btn {
+            background: linear-gradient(45deg, #8b0000, #dc143c);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-family: 'Cinzel', serif;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.4);
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 0, 0, 0.6);
+        }
+        
+        /* CLEAN SCREEN MANAGEMENT */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        /* CLEAN SECTION MANAGEMENT - ALL SECTIONS BEHAVE THE SAME */
+        .section {
+            background: #f4e4c1;
+            border: 3px solid #8b4513;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            color: #2c1810;
+            font-family: 'Crimson Text', serif;
+            box-shadow: 0 8px 32px rgba(139, 69, 19, 0.4);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(139, 69, 19, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(139, 69, 19, 0.3);
+        }
+        
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            color: #8b4513;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        /* CLEAN REVEAL SYSTEM - ALL CONTENT STARTS HIDDEN */
+        .section-content {
+            display: none;
+        }
+        
+        .section-content.revealed {
+            display: block;
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .highlight {
+            color: #8b0000;
+            font-weight: bold;
+        }
+        
+        .reveal-btn {
+            background: linear-gradient(45deg, #8b4513, #d4af37);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 1rem auto;
+            transition: all 0.3s ease;
+            font-family: 'Cinzel', serif;
+            display: block;
+            text-align: center;
+        }
+        
+        .reveal-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(139, 69, 19, 0.4);
+        }
+        
+        .sorting-hat-screen {
+            text-align: center;
+        }
+        
+        .sorting-hat {
+            font-size: 12rem;
+            margin: 2rem 0;
+            animation: hatWiggle 2s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 10px 20px rgba(139, 69, 19, 0.5));
+            text-shadow: 5px 5px 10px rgba(0,0,0,0.3);
+        }
+        
+        .sorting-hat:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 30px #d4af37) drop-shadow(0 10px 20px rgba(139, 69, 19, 0.5));
+            text-shadow: 0 0 20px #d4af37, 5px 5px 10px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes hatWiggle {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+        
+        .quiz-question {
+            background: #f4e4c1;
+            border: 3px solid #8b4513;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            color: #2c1810;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(139, 69, 19, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .quiz-option {
+            background: #8b4513;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            margin: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .quiz-option:hover {
+            background: #d4af37;
+            transform: scale(1.05);
+        }
+        
+        .navigation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1002;
+        }
+        
+        .nav-btn {
+            background: rgba(139, 0, 0, 0.8);
+            color: white;
+            border: 1px solid #d4af37;
+            padding: 10px 15px;
+            margin: 0 5px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(139, 0, 0, 1);
+            transform: scale(1.1);
+        }
+        
+        .patronus-animal {
+            font-size: 4rem;
+            margin: 1rem 0;
+            animation: patronusGlow 2s ease-in-out infinite alternate;
+            text-align: center;
+        }
+        
+        @keyframes patronusGlow {
+            0% { text-shadow: 0 0 10px #d4af37; }
+            100% { text-shadow: 0 0 30px #d4af37, 0 0 40px #ffd700; }
+        }
+        
+        .magical-list {
+            list-style: none;
+            padding-left: 0;
+            font-size: 1.2rem;
+            color: #2c1810;
+        }
+        
+        .magical-list li {
+            position: relative;
+            padding-left: 2rem;
+            margin: 0.5rem 0;
+        }
+        
+        .magical-list li:before {
+            content: "⚡";
+            position: absolute;
+            left: 0;
+            color: #8b4513;
+            font-size: 1.2rem;
+        }
+        
+        .day-card {
+            background: #f4e4c1;
+            border: 2px solid #8b4513;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            color: #2c1810;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(139, 69, 19, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .day-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: #8b4513;
+            margin-bottom: 1rem;
+        }
+        
+        .day-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .magical-widget {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px;
+            background: rgba(139, 0, 0, 0.3);
+            border: 2px solid #d4af37;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 2rem;
+        }
+        
+        .wand-selection {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 2rem 0;
+        }
+        
+        .wand {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            filter: grayscale(100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .wand:hover, .wand.selected {
+            filter: grayscale(0%);
+            transform: scale(1.1);
+        }
+        
+        .wand-stick {
+            width: 4px;
+            height: 80px;
+            background: linear-gradient(180deg, #8B4513 0%, #D2691E 50%, #8B4513 100%);
+            border-radius: 2px 2px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .wand-handle {
+            width: 12px;
+            height: 20px;
+            background: radial-gradient(circle, #8B4513, #654321);
+            border-radius: 6px;
+            margin-top: -2px;
+        }
+        
+        .wand-tip {
+            width: 2px;
+            height: 8px;
+            background: linear-gradient(180deg, #FFD700, #FFA500);
+            border-radius: 1px;
+            margin-bottom: 5px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .wand:hover .wand-tip, .wand.selected .wand-tip {
+            opacity: 1;
+            animation: wandGlow 1s infinite alternate;
+        }
+        
+        @keyframes wandGlow {
+            0% { box-shadow: 0 0 5px #FFD700; }
+            100% { box-shadow: 0 0 15px #FFD700, 0 0 25px #FFD700; }
+        }
+        
+        .wand-name {
+            font-size: 0.9rem;
+            color: #8b4513;
+            margin-top: 8px;
+            font-family: 'Cinzel', serif;
+            text-align: center;
+        }
+        
+        .polaroid {
+            background: white;
+            padding: 10px 10px 50px 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transform: rotate(-5deg);
+            margin: 1rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .polaroid:nth-child(even) {
+            transform: rotate(5deg);
+        }
+        
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.1);
+            z-index: 100;
+        }
+        
+        .polaroid-image {
+            width: 200px;
+            height: 150px;
+            background: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .polaroid-caption {
+            text-align: center;
+            margin-top: 10px;
+            font-family: 'Crimson Text', serif;
+            color: #2c1810;
+            font-size: 0.9rem;
+            border: none;
+            background: transparent;
+            width: 100%;
+            cursor: text;
+            padding: 2px;
+            border-radius: 3px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .polaroid-caption:hover, .polaroid-caption:focus {
+            background-color: rgba(139, 69, 19, 0.1);
+            outline: none;
+        }
+        
+        .uploaded-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 3px;
+            display: block;
+        }
+        
+        input[type="file"] {
+            display: none !important;
+        }
+        
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .shopping-item input[type="checkbox"] {
+            margin-right: 1rem;
+            transform: scale(1.5);
+        }
+        
+        .shopping-item input[type="checkbox"]:checked + span {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+        
+        .option-item {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+        
+        .option-item input[type="checkbox"] {
+            margin-right: 1rem;
+            transform: scale(1.3);
+            cursor: pointer;
+        }
+        
+        .option-item span.crossed-out {
+            text-decoration: line-through;
+            opacity: 0.5;
+            color: #888;
+        }
+        
+        .achievement {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #8b0000, #dc143c);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            z-index: 9999;
+            animation: achievementSlide 4s ease-in-out forwards;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(139, 0, 0, 0.4);
+        }
+        
+        @keyframes achievementSlide {
+            0% { transform: translateX(100%); opacity: 0; }
+            10% { transform: translateX(0); opacity: 1; }
+            90% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+        
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 1rem;
+                margin: 1rem 0;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="floating-emojis" id="floatingEmojis"></div>
+    
+    <!-- Option A Popup Overlay -->
+    <div class="option-popup-overlay" id="optionAPopup">
+        <div class="option-popup">
+            <h3>🎯 Option A: Return to Universal Studios & Islands of Adventure</h3>
+            <div style="text-align: left; margin: 1rem 0;">
+                <p style="color: #8b4513; font-style: italic; margin-bottom: 1rem;">
+                    "The adventure continues where magic never ends!" ✨
+                </p>
+                <h4 style="color: #8b4513; margin-bottom: 0.5rem;">Perfect for:</h4>
+                <ul style="color: #2c1810; margin-left: 1rem;">
+                    <li>🎢 Re-riding your favorite attractions without the crowds</li>
+                    <li>🪄 Trying interactive wand locations you might have missed</li>
+                    <li>📸 Taking photos in perfect lighting conditions</li>
+                    <li>🍺 One more Butterbeer at Three Broomsticks or Leaky Cauldron</li>
+                    <li>🛍️ Last-minute shopping at both Diagon Alley and Hogsmeade</li>
+                    <li>🏰 Exploring details in Hogwarts Castle you didn't notice before</li>
+                </ul>
+                <p style="color: #8b4513; font-style: italic; margin-top: 1rem;">
+                    "Sometimes the most magical moments happen when you return to familiar places with fresh eyes!" 🌟
+                </p>
+            </div>
+            <button class="close-popup-btn" onclick="closeOptionPopup()">✨ Perfect Choice! ✨</button>
+        </div>
+    </div>
+    
+    <!-- Option B Popup Overlay -->
+    <div class="option-popup-overlay" id="optionBPopup">
+        <div class="option-popup">
+            <h3>🗺️ Option B: Explore Orlando's Hidden Magical Treasures</h3>
+            <div style="text-align: left; margin: 1rem 0;">
+                <p style="color: #8b4513; font-style: italic; margin-bottom: 1rem;">
+                    "Adventure lies beyond the familiar paths!" ⭐
+                </p>
+                <h4 style="color: #8b4513; margin-bottom: 0.5rem;">Magical Options Include:</h4>
+                <ul style="color: #2c1810; margin-left: 1rem;">
+                    <li>🏰 Disney Springs - Beautiful waterfront shopping and dining</li>
+                    <li>🎡 ICON Park - Orlando Eye and magical city views</li>
+                    <li>🌸 Harry P. Leu Gardens - Enchanted botanical paradise</li>
+                    <li>🏛️ Orlando Museum of Art - Cultural magical experiences</li>
+                    <li>🍫 The Wizarding World gift shops outside the parks</li>
+                    <li>🎪 CityWalk entertainment and unique dining experiences</li>
+                    <li>☕ Cozy local wizarding-themed cafes and bookstores</li>
+                </ul>
+                <p style="color: #8b4513; font-style: italic; margin-top: 1rem;">
+                    "Sometimes the greatest magic is found in places you never expected!" 🦋
+                </p>
+            </div>
+            <button class="close-popup-btn" onclick="closeOptionPopup()">✨ Adventure Awaits! ✨</button>
+        </div>
+    </div>
+    
+    <div class="navigation">
+        <button class="nav-btn" onclick="goHome()" title="Back to Start">🏠</button>
+    </div>
+    
+    <div class="container">
+        <!-- Sorting Hat Screen -->
+        <div class="screen sorting-hat-screen" id="sortingScreen">
+            <h1 class="main-title">🎩 The Sorting Hat Awaits 🎩</h1>
+            <div class="sorting-hat" onclick="startSorting()">🎩</div>
+            <p class="subtitle">Click the Sorting Hat to discover your Hogwarts House, Stephanie!</p>
+            <div class="quiz-question" id="quizQuestion" style="display: none;">
+                <h3 id="questionText"></h3>
+                <div id="questionOptions"></div>
+            </div>
+        </div>
+        
+        <!-- Title Screen -->
+        <div class="screen title-screen" id="titleScreen">
+            <h1 class="main-title">✨ A Magical Adventure Awaits ✨</h1>
+            <p class="subtitle">Your Birthday Surprise Has Been Enchanted...</p>
+            <button class="start-btn" onclick="startJourney()">🪄 Cast the Revealing Spell to open 🪄</button>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="screen" id="contentScreen">
+            
+            <!-- Wand Selection Section -->
+            <div class="section">
+                <h2 class="section-title">🪄 Choose Your Wand at Ollivanders, Stephanie 🪄</h2>
+                <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
+                    "The wand chooses the wizard, Stephanie... let's see which one calls to you!" ✨
+                </div>
+                <div class="wand-selection">
+                    <div class="wand" onclick="selectWand(this, 'Holly')" title="Holly & Phoenix Feather - The Chosen One's Wand">
+                        <div class="wand-tip"></div>
+                        <div class="wand-stick holly"></div>
+                        <div class="wand-handle holly"></div>
+                        <div class="wand-name">Holly</div>
+                    </div>
+                    <div class="wand" onclick="selectWand(this, 'Elder')" title="Elder Wand - The Deathstick">
+                        <div class="wand-tip"></div>
+                        <div class="wand-stick elder"></div>
+                        <div class="wand-handle elder"></div>
+                        <div class="wand-name">Elder</div>
+                    </div>
+                    <div class="wand" onclick="selectWand(this, 'Oak')" title="Oak & Dragon Heartstring - Strong & Loyal">
+                        <div class="wand-tip"></div>
+                        <div class="wand-stick oak"></div>
+                        <div class="wand-handle oak"></div>
+                        <div class="wand-name">Oak</div>
+                    </div>
+                    <div class="wand" onclick="selectWand(this, 'Willow')" title="Willow & Unicorn Hair - Graceful & Healing">
+                        <div class="wand-tip"></div>
+                        <div class="wand-stick willow"></div>
+                        <div class="wand-handle willow"></div>
+                        <div class="wand-name">Willow</div>
+                    </div>
+                </div>
+                <p id="wandMessage" style="color: #8b4513; font-style: italic; margin-top: 1rem; min-height: 40px; text-align: center;"></p>
+            </div>
+            
+            <!-- Spell Casting Section -->
+            <div class="section">
+                <h2 class="section-title">✨ Cast Your Spells ✨</h2>
+                <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
+                    "Now that you have your wand, let's practice some magic!" 🪄
+                </div>
+                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 2rem 0;">
+                    <span class="magical-widget" onclick="castMagicalSpell(event, '💝', 'Amortentia')" title="Cast Love Spell - Amortentia">💝</span>
+                    <span class="magical-widget" onclick="castMagicalSpell(event, '🎊', 'Colovaria')" title="Cast Celebration Spell - Colovaria">🎉</span>
+                    <span class="magical-widget" onclick="castMagicalSpell(event, '✨', 'Lumos')" title="Cast Light Spell - Lumos">💡</span>
+                </div>
+            </div>
+            
+            <!-- Patronus Section -->
+            <div class="section">
+                <h3 style="color: #8b4513; font-family: 'Cinzel', serif; margin-bottom: 1rem; text-align: center;">Discover Your Patronus, Stephanie!</h3>
+                <p style="color: #2c1810; margin-bottom: 1rem; text-align: center;">Cast Expecto Patronum to reveal your spirit animal guardian:</p>
+                <div style="text-align: center;">
+                    <button class="reveal-btn" onclick="generatePatronus()">✨ Expecto Patronum! ✨</button>
+                </div>
+                <div id="patronusResult" style="display: none; text-align: center;">
+                    <div class="patronus-animal" id="patronusAnimal"></div>
+                    <p id="patronusMessage" style="color: #2c1810; font-style: italic; text-align: center;"></p>
+                </div>
+            </div>
+            
+            <!-- Birthday Card -->
+            <div class="section">
+                <h2 class="section-title">🎂 Your Magical Birthday Surprise! 🎂</h2>
+                <div style="text-align: center; margin: 2rem 0;">
+                    <button class="reveal-btn" onclick="revealSection('destination')">🏰 Cast Revelio - Show Your Destination!</button>
+                </div>
+                <div class="section-content" id="destination">
+                    <p style="text-align: center; font-size: 1.5rem; line-height: 1.8; margin: 2rem 0;">
+                        Pack your bags and prepare your broomstick, my beautiful wizard...<br>
+                        We're going on a <span class="highlight">magical journey</span> to the<br>
+                        <span class="highlight" style="font-size: 1.7rem;">Wizarding World of Harry Potter!</span>
+                    </p>
+                    <h3 style="text-align: center; color: #8b0000; font-size: 2rem; margin: 1rem 0;">
+                        🌟 ORLANDO, FLORIDA 🌟<br>
+                        Universal Studios & Epic Universe
+                    </h3>
+                    <p style="text-align: center; font-size: 1.2rem;">
+                        June 4-7, 2025 | 4 Magical Days & 3 Enchanted Nights
+                    </p>
+                    <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
+                        "We're going to Hogwarts!" - Platform 9¾ awaits! 🚂
+                    </div>
+                    <div style="text-align: center; font-style: italic; color: #8b4513; margin: 1rem 0;">
+                        "It does not do to dwell on dreams and forget to live... but this dream is coming true!" ✨
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Magical Experiences Section -->
+            <div class="section">
+                <h2 class="section-title">🪄 Magical Experiences Await 🪄</h2>
+                <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
+                    "It is our choices that show what we truly are, far more than our abilities." - Dumbledore ✨
+                </div>
+                <button class="reveal-btn" onclick="revealSection('experiences')">✨ Open the Book of Magical Secrets</button>
+                <div class="section-content" id="experiences">
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <h3 style="color: #8b4513; margin-bottom: 2rem; font-size: 1.5rem;">What Makes This Journey Truly Magical:</h3>
+                        <ul class="magical-list" style="font-size: 1.2rem;">
+                            <li>🪄 <strong>Interactive wand experiences</strong> throughout both parks - cast real spells!</li>
+                            <li>🚂 <strong>Riding aboard the Hogwarts Express</strong> - journey between magical realms!</li>
+                            <li>🍺 <strong>Butterbeer and magical treats</strong> at every turn (Chocolate Frogs included!)</li>
+                            <li>🎢 <strong>Rides through iconic Harry Potter scenes</strong> - live the movies!</li>
+                            <li>🛍️ <strong>Shopping at Diagon Alley and Hogsmeade</strong> - magical souvenirs await!</li>
+                            <li>🌟 <strong>Brand new Epic Universe experiences</strong> (opening 2025!) - be among the first!</li>
+                            <li>✈️ <strong>First-class comfort</strong> on your special birthday - you deserve the best!</li>
+                            <li>🏨 <strong>Hotel steps away</strong> from all the magic - no long commutes!</li>
+                            <li>📅 <strong>Four full days of wizarding world immersion</strong> - total magical escape!</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 3rem 0; padding: 2.5rem; background: rgba(139, 69, 19, 0.1); border-radius: 20px; border: 2px solid #8b4513;">
+                        <h2 style="color: #8b4513; font-family: 'Cinzel', serif; font-size: 2rem; margin-bottom: 1rem;">
+                            🎂 Happy Birthday, My Beautiful Wife Stephanie! 🎂
+                        </h2>
+                        <div style="font-style: italic; color: #8b4513; margin: 1rem 0; font-size: 1.1rem;">
+                            "After all this time?" ... "Always." 💕
+                        </div>
+                        <p style="font-size: 1.5rem; font-weight: bold; color: #8b0000; margin: 2rem 0; line-height: 1.8;">
+                            I love you forever and ever and 110 more lives BB! ✨<br>
+                            Let's create the most magical memories together!
+                        </p>
+                        
+                        <div style="margin: 2rem 0;">
+                            <h3 style="color: #8b4513; margin-bottom: 1rem; font-family: 'Cinzel', serif; font-size: 1.3rem;">Cast Your Love Spells:</h3>
+                            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin: 1.5rem 0;">
+                                <span class="magical-widget" onclick="castLoveSpell(event, '💝', 'Amortentia')" title="Cast Love Potion Spell - Amortentia" style="background: rgba(220, 20, 60, 0.3);">💝</span>
+                                <span class="magical-widget" onclick="castLoveSpell(event, '♾️', 'Protean Charm')" title="Cast Infinity Bond Spell - Protean Charm" style="background: rgba(139, 0, 139, 0.3);">♾️</span>
+                                <span class="magical-widget" onclick="castLoveSpell(event, '📸', 'Pensieve Memory')" title="Save Memory in Pensieve" style="background: rgba(70, 130, 180, 0.3);">📸</span>
+                                <span class="magical-widget" onclick="castLoveSpell(event, '🌟', 'Lumos Solem')" title="Cast Eternal Light Spell - Lumos Solem" style="background: rgba(255, 215, 0, 0.3);">🌟</span>
+                            </div>
+                            <div style="margin: 1rem 0; font-size: 0.9rem; color: #8b4513; font-style: italic;">
+                                💖 Cast "Always" Spell • 🎆 Cast Fireworks Spell • 🌀 Save in Pensieve
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 2rem; font-style: italic; color: #8b4513; font-size: 1rem;">
+                            "Mischief Managed... but Kyle and Stephanie's greatest adventure is just beginning!" 🗺️✨
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Travel Section -->
+            <div class="section">
+                <h2 class="section-title" style="color: #8b4513;">🧳 Your Royal Transportation 🧳</h2>
+                <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
+                    "The Knight Bus - Emergency transport for the stranded witch or wizard!" 🚌
+                </div>
+                <button class="reveal-btn" onclick="revealSection('travel')">📜 Open the Travel Scroll</button>
+                <div class="section-content" id="travel">
+                    <ul class="magical-list" style="font-size: 1.3rem; color: #2c1810;">
+                        <li><strong>✈️ Flights:</strong> <span class="highlight" style="color: #8b0000;">Delta First Class</span> - Because you deserve the royal treatment!</li>
+                        <li><strong>🛫 Departure:</strong> June 4th, 10:00 AM from DTW to MCO (meal included!)</li>
+                        <li><strong>🛬 Return:</strong> June 7th, 6:00 PM from MCO to DTW (meal included!)</li>
+                        <li><strong>🚗 Ground Transport:</strong> Premium rental car from National - You get to pick the car!</li>
+                        <li><strong>🚂 Magical Transport:</strong> <span class="highlight" style="color: #8b0000;">Hogwarts Express</span> between parks! All aboard Platform 9¾!</li>
+                        <li><strong>🏨 Accommodation:</strong> <span class="highlight" style="color: #8b0000;">Hyatt Hotel</span> directly across from Universal Studios</li>
+                    </ul>
+                    <div style="text-align: center; margin: 1.5rem 0; font-style: italic; color: #8b4513;">
+                        "First class travel, just like the Ministry of Magic!" ✨
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Itinerary Section -->
+            <div class="section">
+                <h2 class="section-title">🗺️ Our Magical Itinerary - The Marauder's Plan 🗺️</h2>
+                <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
+                    "Mischief Managed... but the adventure is just beginning!" ⏰
+                </div>
+                <button class="reveal-btn" onclick="revealSection('itinerary')">📜 Unfold the Marauder's Map</button>
+                <div class="section-content" id="itinerary">
+                    
+                    <div class="day-card" style="border-left: 5px solid #740001;">
+                        <div class="day-title">🎂 Day 1 - June 4th (Your Birthday!) 🎂</div>
+                        <div style="font-style: italic; color: #8b4513; margin-bottom: 1rem;">
+                            "Today is your day to shine brighter than a Patronus!" ✨
+                        </div>
+                        <ul class="magical-list">
+                            <li>🌅 Morning flight departure, 10:16am - First Class luxury (like traveling with the Minister of Magic!)</li>
+                            <li>🏰 Arrive in Orlando, 12:53pm and pick up our magical chariot (rental car)</li>
+                            <li>🛏️ Check into the Hyatt - your birthday castle</li>
+                            <li><span class="highlight">3:00 PM - 9:00 PM:</span> Islands of Adventure & Universal Studios</li>
+                            <li>🪄 <strong>Special Mission:</strong> Visit Ollivanders and choose your very own Harry Potter wand for spell-casting!</li>
+                            <li>🍽️ Birthday dinner at a magical location of your choice (Three Broomsticks perhaps?)</li>
+                            <li>🎆 <strong>Birthday Finale:</strong> Hogwarts™ Always Fireworks Show - the perfect end to your magical birthday! ✨</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card" style="border-left: 5px solid #ecb939;">
+                        <div class="day-title">🌟 Day 2 - June 5th (Epic Universe Day!) 🌟</div>
+                        <div style="font-style: italic; color: #8b4513; margin-bottom: 1rem;">
+                            "New magic awaits in realms yet unexplored!" 🏰
+                        </div>
+                        <ul class="magical-list">
+                            <li><span class="highlight">9:00 AM - 9:00 PM:</span> Full day at Epic Universal</li>
+                            <li>🎊 Brand new park - we'll be among the first wizards to experience it!</li>
+                            <li>🧙‍♀️ Busy - Ride times will be long due to alot of muggles but we will manage!</li>
+                            <li>☕ Take breaks and savor every magical moment with Butterbeer</li>
+                            <li>🏰 Explore brand new Harry Potter experiences and attractions</li>
+                            <li>⭐ Full 12 hours of pure wizarding wonder and adventure</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card" style="border-left: 5px solid #222f5b;">
+                        <div class="day-title">⚡ Day 3 - June 6th (Free Roam Magic!) ⚡</div>
+                        <div style="font-style: italic; color: #8b4513; margin-bottom: 1rem;">
+                            "Follow the spiders... or just follow your heart!" 🕷️
+                        </div>
+                        <ul class="magical-list">
+                            <li><span class="highlight">9:00 AM - 9:00 PM:</span> Islands of Adventure & Universal Studios</li>
+                            <li>🎢 Complete freedom to ride whatever calls to your magical heart</li>
+                            <li>🔄 Revisit favorite attractions or discover new enchantments</li>
+                            <li>🍻 Dinner at Universal CityWalk - amazing magical restaurants await!</li>
+                            <li>🌙 Stay as long as the magic moves you under the stars</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="day-card" style="border-left: 5px solid #2a623d;">
+                        <div class="day-title">🏃‍♀️ Day 4 - June 7th (Final Magic Hour!) 🏃‍♀️</div>
+                        <div style="font-style: italic; color: #8b4513; margin-bottom: 1rem;">
+                            "All good things must come to an end... but memories last forever!" 💫
+                        </div>
+                        <ul class="magical-list">
+                            <li><span class="highlight">9:00 AM - 2:00 PM:</span> Your choice magical adventure!</li>
+                            <li class="option-item">
+                                <input type="checkbox" id="optionA" onchange="selectOption('A', this)">
+                                <span id="optionAText">🎯 Option A: Return to Islands of Adventure & Universal Studios for anything we missed</span>
+                            </li>
+                            <li class="option-item">
+                                <input type="checkbox" id="optionB" onchange="selectOption('B', this)">
+                                <span id="optionBText">🗺️ Option B: Explore other nearby Orlando attractions (Diagon Alley shopping spree?)</span>
+                            </li>
+                            <li><strong>⏰ Hard departure at 2:00 PM</strong> to return car and catch our flying carriage home</li>
+                            <li>✈️ Evening flight home with hearts full of magical memories</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Shopping List -->
+            <div class="section">
+                <h2 class="section-title">🛍️ Stephanie's Diagon Alley Shopping List 🛍️</h2>
+                <p style="text-align: center; font-style: italic; color: #8b4513; margin-bottom: 2rem;">
+                    "Don't forget to visit these magical shops, Stephanie!"
+                </p>
+                <div class="shopping-item">
+                    <input type="checkbox" id="wand">
+                    <span>🪄 Interactive Wand from Ollivanders</span>
+                </div>
+                <div class="shopping-item">
+                    <input type="checkbox" id="butterbeer">
+                    <span>🍺 Butterbeer (Regular & Frozen!)</span>
+                </div>
+                <div class="shopping-item">
+                    <input type="checkbox" id="chocolate-frogs">
+                    <span>🐸 Chocolate Frogs with Wizard Cards</span>
+                </div>
+                <div class="shopping-item">
+                    <input type="checkbox" id="bertie-botts">
+                    <span>🍬 Bertie Bott's Every Flavour Beans</span>
+                </div>
+                <div class="shopping-item">
+                    <input type="checkbox" id="house-robe">
+                    <span>🧙‍♀️ Hogwarts House Robe</span>
+                </div>
+                <div class="shopping-item">
+                    <input type="checkbox" id="marauders-map">
+                    <span>🗺️ Replica Marauder's Map</span>
+                </div>
+                <div class="shopping-item">
+                    <input type="checkbox" id="wizarding-backpack">
+                    <span>🎒 Wizarding Backpack</span>
+                </div>
+            </div>
+            
+            <!-- MAGICAL MEMORY ALBUM SECTION - NOW CLEAN -->
+            <div class="section">
+                <h2 class="section-title">📸 Magical Memory Album 📸</h2>
+                <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
+                    "Happiness can be found, even in the darkest of times, if one only remembers to turn on the light... and capture the moment!" ✨
+                </div>
+                <div style="text-align: center; margin: 2rem 0;">
+                    <button class="reveal-btn" onclick="revealSection('photoAlbum')">📸 Open Your Memory Vault</button>
+                </div>
+                <div class="section-content" id="photoAlbum">
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <h3 style="color: #8b4513; margin-bottom: 1rem;">✨ Capture Your Magical Memories! ✨</h3>
+                        <p style="color: #8b4513; margin-bottom: 1rem; font-style: italic;">Click any photo to add your memories, and edit the captions!</p>
+                    
+                    <div class="polaroid" onclick="document.getElementById('photoUpload1').click()">
+                        <div class="polaroid-image" id="photo1">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Hogwarts Castle at Universal" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo1')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload2').click()">
+                        <div class="polaroid-image" id="photo2">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Hogwarts Express Journey" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo2')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload3').click()">
+                        <div class="polaroid-image" id="photo3">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Ollivanders Wand Shop" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo3')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload4').click()">
+                        <div class="polaroid-image" id="photo4">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Butterbeer in Hogsmeade" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo4')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload5').click()">
+                        <div class="polaroid-image" id="photo5">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Diagon Alley Adventures" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo5')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload6').click()">
+                        <div class="polaroid-image" id="photo6">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Epic Universe Magic" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo6')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload7').click()">
+                        <div class="polaroid-image" id="photo7">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Three Broomsticks Feast" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo7')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload8').click()">
+                        <div class="polaroid-image" id="photo8">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Forbidden Journey Ride" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo8')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload9').click()">
+                        <div class="polaroid-image" id="photo9">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Gringotts Bank Adventure" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo9')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload10').click()">
+                        <div class="polaroid-image" id="photo10">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Quidditch Pitch Fun" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo10')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload11').click()">
+                        <div class="polaroid-image" id="photo11">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Birthday Fireworks Show" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo11')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload12').click()">
+                        <div class="polaroid-image" id="photo12">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Kyle & Stephanie's Magic" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo12')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload13').click()">
+                        <div class="polaroid-image" id="photo13">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Hagrid's Hut Visit" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo13')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload14').click()">
+                        <div class="polaroid-image" id="photo14">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Ministry of Magic Fun" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo14')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload15').click()">
+                        <div class="polaroid-image" id="photo15">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Sorting Hat Ceremony" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo15')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload16').click()">
+                        <div class="polaroid-image" id="photo16">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Chocolate Frog Shopping" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo16')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload17').click()">
+                        <div class="polaroid-image" id="photo17">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Dragon Challenge Ride" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo17')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload18').click()">
+                        <div class="polaroid-image" id="photo18">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Great Hall Dining" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo18')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload19').click()">
+                        <div class="polaroid-image" id="photo19">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Magical Creature Encounters" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo19')">
+                    </div>
+                    <div class="polaroid" onclick="document.getElementById('photoUpload20').click()">
+                        <div class="polaroid-image" id="photo20">
+                            <div style="text-align: center; color: #888; font-size: 1rem;">
+                                <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+                                <div>Tap to add photo</div>
+                            </div>
+                        </div>
+                        <input type="text" class="polaroid-caption" value="Our Magical Love Story" placeholder="Add your caption..." onclick="event.stopPropagation()" onchange="savePolaroidCaption(this, 'photo20')">
+                    </div>
+                    
+                    <input type="file" id="photoUpload1" accept="image/*" onchange="uploadPhoto(this, 'photo1')">
+                    <input type="file" id="photoUpload2" accept="image/*" onchange="uploadPhoto(this, 'photo2')">
+                    <input type="file" id="photoUpload3" accept="image/*" onchange="uploadPhoto(this, 'photo3')">
+                    <input type="file" id="photoUpload4" accept="image/*" onchange="uploadPhoto(this, 'photo4')">
+                    <input type="file" id="photoUpload5" accept="image/*" onchange="uploadPhoto(this, 'photo5')">
+                    <input type="file" id="photoUpload6" accept="image/*" onchange="uploadPhoto(this, 'photo6')">
+                    <input type="file" id="photoUpload7" accept="image/*" onchange="uploadPhoto(this, 'photo7')">
+                    <input type="file" id="photoUpload8" accept="image/*" onchange="uploadPhoto(this, 'photo8')">
+                    <input type="file" id="photoUpload9" accept="image/*" onchange="uploadPhoto(this, 'photo9')">
+                    <input type="file" id="photoUpload10" accept="image/*" onchange="uploadPhoto(this, 'photo10')">
+                    <input type="file" id="photoUpload11" accept="image/*" onchange="uploadPhoto(this, 'photo11')">
+                    <input type="file" id="photoUpload12" accept="image/*" onchange="uploadPhoto(this, 'photo12')">
+                    <input type="file" id="photoUpload13" accept="image/*" onchange="uploadPhoto(this, 'photo13')">
+                    <input type="file" id="photoUpload14" accept="image/*" onchange="uploadPhoto(this, 'photo14')">
+                    <input type="file" id="photoUpload15" accept="image/*" onchange="uploadPhoto(this, 'photo15')">
+                    <input type="file" id="photoUpload16" accept="image/*" onchange="uploadPhoto(this, 'photo16')">
+                    <input type="file" id="photoUpload17" accept="image/*" onchange="uploadPhoto(this, 'photo17')">
+                    <input type="file" id="photoUpload18" accept="image/*" onchange="uploadPhoto(this, 'photo18')">
+                    <input type="file" id="photoUpload19" accept="image/*" onchange="uploadPhoto(this, 'photo19')">
+                    <input type="file" id="photoUpload20" accept="image/*" onchange="uploadPhoto(this, 'photo20')">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BUTTERBEER RECIPE SECTION - NOW CLEAN -->
+            <div class="section">
+                <h2 class="section-title">🍺 Secret Butterbeer Recipe! 🍺</h2>
+                <div style="text-align: center; margin: 1rem 0; font-style: italic; color: #8b4513;">
+                    "For when you both want to bring the magic of our adventure home together..." ✨
+                </div>
+                <div style="text-align: center; margin: 1rem 0;">
+                    <button class="reveal-btn" onclick="revealSection('butterBeerRecipe')">🍺 Reveal the Secret Recipe</button>
+                </div>
+                <div class="section-content" id="butterBeerRecipe">
+                    <p style="font-style: italic; color: #8b4513; margin-bottom: 1rem;">
+                        "Mix these magical ingredients with love and intention..."
+                    </p>
+                    <ul style="color: #2c1810;">
+                        <li>🥤 1 cup cream soda</li>
+                        <li>🧈 2 tablespoons butterscotch syrup</li>
+                        <li>🥛 ¼ cup heavy cream</li>
+                        <li>🍯 1 tablespoon honey</li>
+                        <li>🧈 1 tablespoon melted butter</li>
+                        <li>🧂 Pinch of salt</li>
+                    </ul>
+                    <p style="font-style: italic; color: #8b4513; margin-top: 1rem;">
+                        "Mix the topping ingredients, pour over cream soda, and you've got Butterbeer magic!"
+                    </p>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+    <script>
+        // Game state
+        let currentQuestionIndex = 0;
+        let houseScores = { gryffindor: 0, hufflepuff: 0, ravenclaw: 0, slytherin: 0 };
+        let selectedWand = null;
+        
+        const houses = [
+            { name: 'GRYFFINDOR', emoji: '🦁', class: 'gryffindor' },
+            { name: 'HUFFLEPUFF', emoji: '🦡', class: 'hufflepuff' },
+            { name: 'RAVENCLAW', emoji: '🦅', class: 'ravenclaw' },
+            { name: 'SLYTHERIN', emoji: '🐍', class: 'slytherin' }
+        ];
+        
+        const sortingQuestions = [
+            {
+                question: "You're walking through a dark forest. What draws your attention?",
+                options: [
+                    { text: "The silver unicorn grazing peacefully", house: "hufflepuff" },
+                    { text: "The mysterious hooded figure", house: "slytherin" },
+                    { text: "The golden treasure glinting in moonlight", house: "gryffindor" },
+                    { text: "The ancient runes carved in stone", house: "ravenclaw" }
+                ]
+            },
+            {
+                question: "What magical creature would you most like to study?",
+                options: [
+                    { text: "Phoenix - symbol of rebirth and courage", house: "gryffindor" },
+                    { text: "Niffler - loyal and hardworking", house: "hufflepuff" },
+                    { text: "Thestral - mysterious and misunderstood", house: "ravenclaw" },
+                    { text: "Basilisk - powerful and feared", house: "slytherin" }
+                ]
+            },
+            {
+                question: "Which magical ability calls to you most?",
+                options: [
+                    { text: "Mind reading and telepathy", house: "ravenclaw" },
+                    { text: "Speaking to animals", house: "hufflepuff" },
+                    { text: "Controlling the elements", house: "gryffindor" },
+                    { text: "Seeing into the future", house: "slytherin" }
+                ]
+            }
+        ];
+        
+        const patronusAnimals = [
+            { animal: "🦌", name: "Doe", meaning: "Grace, gentleness, and eternal love" },
+            { animal: "🐺", name: "Wolf", meaning: "Loyalty, intelligence, and fierce protection" },
+            { animal: "🦅", name: "Eagle", meaning: "Vision, strength, and soaring ambition" },
+            { animal: "🐴", name: "Horse", meaning: "Freedom, nobility, and unstoppable spirit" },
+            { animal: "🦁", name: "Lion", meaning: "Courage, leadership, and brave heart" },
+            { animal: "🐘", name: "Elephant", meaning: "Wisdom, memory, and gentle strength" }
+        ];
+        
+        // PWA Service Worker Registration with Error Handling
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                try {
+                    navigator.serviceWorker.register('./sw.js')
+                        .then((registration) => {
+                            console.log('🪄 PWA: Service Worker registered successfully!', registration.scope);
+                        })
+                        .catch((error) => {
+                            console.log('🪄 PWA: Service Worker registration failed (this is normal for file:// URLs):', error.message);
+                            console.log('🪄 PWA: App will work perfectly without service worker!');
+                        });
+                } catch (error) {
+                    console.log('🪄 PWA: Service Worker not available (running from file://), but app works perfectly!');
+                }
+            });
+        } else {
+            console.log('🪄 PWA: Service Worker not supported, but app works perfectly!');
+        }
+        
+        // CLEAN INITIALIZATION
+        function initializeMagic() {
+            createStars();
+            createFloatingEmojis();
+            loadSavedPhotos(); // Load any previously saved photos
+            showScreen('sortingScreen');
+        }
+        
+        // CLEAN SCREEN MANAGEMENT
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show target screen
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        // CLEAN SECTION REVEAL SYSTEM
+        function revealSection(sectionId) {
+            const content = document.getElementById(sectionId);
+            if (content) {
+                content.classList.add('revealed');
+                showAchievement(`✨ ${sectionId} revealed! ✨`);
+            }
+        }
+        
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.animationDuration = Math.random() * 3 + 1 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        function createFloatingEmojis() {
+            const harryPotterEmojis = [
+                '🦄', '🦄', '🦄', '🦄', '🦄', '🦄', '🪄', '🦉', '⚡', '🐍', '🦅', '🦁', '🦡', 
+                '📜', '🔮', '🎩', '⭐', '🌙', '🗲', '🧙‍♀️', '🧙‍♂️',
+                '🏰', '🚂', '🍺', '🐸', '🕯️', '📚', '🗝️', '💎',
+                '🦄', '🦄', '🦄', '🐺', '🦌', '🐘', '🐴', '✨', '💫', '🌟',
+                '🦄', '🦄'
+            ];
+            
+            const floatingContainer = document.getElementById('floatingEmojis');
+            
+            function createFloatingEmoji() {
+                const emoji = document.createElement('div');
+                emoji.className = 'floating-emoji';
+                emoji.textContent = harryPotterEmojis[Math.floor(Math.random() * harryPotterEmojis.length)];
+                
+                emoji.style.left = Math.random() * 100 + '%';
+                emoji.style.top = '100vh';
+                emoji.style.animationDelay = Math.random() * 2 + 's';
+                emoji.style.animationDuration = (12 + Math.random() * 6) + 's';
+                
+                floatingContainer.appendChild(emoji);
+                
+                setTimeout(() => {
+                    if (emoji.parentNode) {
+                        emoji.parentNode.removeChild(emoji);
+                    }
+                }, 18000);
+            }
+            
+            // Create initial emojis
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => createFloatingEmoji(), i * 500);
+            }
+            
+            // Continue creating emojis
+            setInterval(() => {
+                createFloatingEmoji();
+            }, 1500);
+        }
+        
+        // Sorting functions
+        function startSorting() {
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            if (currentQuestionIndex >= sortingQuestions.length) {
+                finishSorting();
+                return;
+            }
+            
+            const question = sortingQuestions[currentQuestionIndex];
+            document.getElementById('quizQuestion').style.display = 'block';
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('questionOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'quiz-option';
+                button.textContent = option.text;
+                button.onclick = () => answerQuestion(option.house);
+                optionsContainer.appendChild(button);
+            });
+        }
+        
+        function answerQuestion(house) {
+            houseScores[house]++;
+            currentQuestionIndex++;
+            showQuestion();
+        }
+        
+        function finishSorting() {
+            let maxScore = 0;
+            let selectedHouse = 'gryffindor';
+            
+            for (let house in houseScores) {
+                if (houseScores[house] > maxScore) {
+                    maxScore = houseScores[house];
+                    selectedHouse = house;
+                }
+            }
+            
+            const houseData = houses.find(h => h.class === selectedHouse);
+            
+            document.getElementById('quizQuestion').innerHTML = `
+                <h2 style="color: #8b4513; margin-bottom: 1rem;">🎩 The Sorting Hat Has Spoken! 🎩</h2>
+                <div style="font-size: 3rem; margin: 2rem 0;">${houseData.emoji}</div>
+                <h3 style="color: #8b0000; margin-bottom: 1rem;">${houseData.name}!</h3>
+                <p style="font-style: italic; margin-bottom: 2rem;">"Welcome to your house, Stephanie! Kyle's magical journey begins now..."</p>
+                <button class="quiz-option" onclick="continueToTitle()">Continue to Your Birthday Surprise!</button>
+            `;
+        }
+        
+        function continueToTitle() {
+            showScreen('titleScreen');
+        }
+        
+        function startJourney() {
+            showScreen('contentScreen');
+            showAchievement("🎂 Your magical birthday adventure begins! ✨");
+        }
+        
+        function goHome() {
+            // Reset everything
+            currentQuestionIndex = 0;
+            houseScores = { gryffindor: 0, hufflepuff: 0, ravenclaw: 0, slytherin: 0 };
+            selectedWand = null;
+            
+            // Reset quiz
+            document.getElementById('quizQuestion').style.display = 'none';
+            document.getElementById('quizQuestion').innerHTML = `
+                <h3 id="questionText"></h3>
+                <div id="questionOptions"></div>
+            `;
+            
+            // Reset patronus
+            document.getElementById('patronusResult').style.display = 'none';
+            
+            // Reset wands
+            document.querySelectorAll('.wand').forEach(w => w.classList.remove('selected'));
+            document.getElementById('wandMessage').textContent = '';
+            
+            // Reset all revealed content
+            document.querySelectorAll('.section-content').forEach(content => {
+                content.classList.remove('revealed');
+            });
+            
+            // Reset shopping list
+            document.querySelectorAll('.shopping-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Reset options
+            document.getElementById('optionA').checked = false;
+            document.getElementById('optionB').checked = false;
+            document.getElementById('optionAText').classList.remove('crossed-out');
+            document.getElementById('optionBText').classList.remove('crossed-out');
+            
+            // Close any open popups
+            closeOptionPopup();
+            
+            showScreen('sortingScreen');
+        }
+        
+        // Patronus
+        function generatePatronus() {
+            const randomPatronus = patronusAnimals[Math.floor(Math.random() * patronusAnimals.length)];
+            document.getElementById('patronusAnimal').textContent = randomPatronus.animal;
+            document.getElementById('patronusMessage').textContent = 
+                `Your Patronus is a ${randomPatronus.name}! This represents ${randomPatronus.meaning}.`;
+            document.getElementById('patronusResult').style.display = 'block';
+        }
+        
+        // Wand selection
+        function selectWand(wandElement, wandType) {
+            document.querySelectorAll('.wand').forEach(w => w.classList.remove('selected'));
+            wandElement.classList.add('selected');
+            selectedWand = wandType;
+            
+            const messages = {
+                'Holly': "Holly wands choose wizards who need help overcoming a tendency to anger and impetuosity. Your wand will be loyal and protective.",
+                'Elder': "The Elder Wand, most powerful wand in existence. It recognizes strength and ambition. A dangerous but magnificent choice.",
+                'Oak': "Oak wands demand partners of strength, courage and fidelity. Your wand will serve you loyally through any hardship.",
+                'Willow': "Willow wands choose healers and those with great potential. Your wand will enhance your natural magical abilities."
+            };
+            
+            document.getElementById('wandMessage').textContent = messages[wandType];
+        }
+        
+        // Spell casting
+        function castMagicalSpell(event, spellSymbol, incantationText) {
+            showAchievement(`${incantationText} spell cast! ✨`);
+            
+            const spell = document.createElement('div');
+            spell.style.position = 'fixed';
+            spell.style.left = event.clientX + 'px';
+            spell.style.top = event.clientY + 'px';
+            spell.style.fontSize = '2rem';
+            spell.style.color = '#d4af37';
+            spell.style.pointerEvents = 'none';
+            spell.style.zIndex = '9999';
+            spell.innerHTML = spellSymbol;
+            spell.style.animation = 'fadeIn 1s ease-out forwards';
+            
+            document.body.appendChild(spell);
+            setTimeout(() => spell.remove(), 1000);
+        }
+        
+        // Love spell casting
+        function castLoveSpell(event, spellSymbol, incantationText) {
+            const loveMessages = {
+                'Amortentia': 'Love Potion brewed with Kyle\'s eternal love! 💕',
+                'Protean Charm': 'Infinite bond spell cast - connected forever! ♾️',
+                'Pensieve Memory': 'Beautiful memory saved in our magical pensieve! 🌀',
+                'Lumos Solem': 'Eternal light spell - you brighten Kyle\'s world! 🌟'
+            };
+            
+            showAchievement(loveMessages[incantationText] || `${incantationText} love spell cast! 💖`);
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const spell = document.createElement('div');
+                    spell.style.position = 'fixed';
+                    spell.style.left = (event.clientX + (Math.random() - 0.5) * 100) + 'px';
+                    spell.style.top = (event.clientY + (Math.random() - 0.5) * 100) + 'px';
+                    spell.style.fontSize = '1.5rem';
+                    spell.style.color = spellSymbol === '💝' ? '#ff69b4' : 
+                                       spellSymbol === '♾️' ? '#9370db' :
+                                       spellSymbol === '📸' ? '#4682b4' : '#ffd700';
+                    spell.style.pointerEvents = 'none';
+                    spell.style.zIndex = '9999';
+                    spell.innerHTML = spellSymbol;
+                    spell.style.animation = 'float 2s ease-out forwards';
+                    spell.style.textShadow = '0 0 10px currentColor';
+                    
+                    document.body.appendChild(spell);
+                    setTimeout(() => spell.remove(), 2000);
+                }, i * 200);
+            }
+        }
+        
+        // Photo upload with localStorage persistence
+        function uploadPhoto(input, photoId) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photoContainer = document.getElementById(photoId);
+                    photoContainer.innerHTML = '';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'uploaded-image';
+                    img.alt = 'Magical Memory';
+                    
+                    photoContainer.appendChild(img);
+                    
+                    // Save photo to localStorage
+                    try {
+                        localStorage.setItem(`magical_photo_${photoId}`, e.target.result);
+                        console.log(`📸 Photo saved for ${photoId}`);
+                    } catch (error) {
+                        console.log('📸 Photo saved in memory only (localStorage not available)');
+                    }
+                    
+                    showAchievement("📸 Magical Memory Captured! ✨");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // Load saved photos from localStorage
+        function loadSavedPhotos() {
+            for (let i = 1; i <= 20; i++) {
+                const photoId = `photo${i}`;
+                try {
+                    const savedPhoto = localStorage.getItem(`magical_photo_${photoId}`);
+                    if (savedPhoto) {
+                        const photoContainer = document.getElementById(photoId);
+                        if (photoContainer) {
+                            photoContainer.innerHTML = '';
+                            
+                            const img = document.createElement('img');
+                            img.src = savedPhoto;
+                            img.className = 'uploaded-image';
+                            img.alt = 'Magical Memory';
+                            
+                            photoContainer.appendChild(img);
+                            console.log(`📸 Photo restored for ${photoId}`);
+                        }
+                    }
+                    
+                    // Load saved caption
+                    const savedCaption = localStorage.getItem(`magical_caption_${photoId}`);
+                    if (savedCaption) {
+                        const captionInput = photoContainer.parentElement.querySelector('.polaroid-caption');
+                        if (captionInput) {
+                            captionInput.value = savedCaption;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`📸 Could not load photo for ${photoId}`);
+                }
+            }
+        }
+        
+        // Save polaroid caption to localStorage
+        function savePolaroidCaption(input, photoId) {
+            try {
+                localStorage.setItem(`magical_caption_${photoId}`, input.value);
+                console.log(`💬 Caption saved for ${photoId}`);
+            } catch (error) {
+                console.log('💬 Caption saved in memory only');
+            }
+        }
+        
+        // Option selection
+        function selectOption(option, checkbox) {
+            if (checkbox.checked) {
+                const otherOption = option === 'A' ? 'B' : 'A';
+                const otherCheckbox = document.getElementById(`option${otherOption}`);
+                const otherText = document.getElementById(`option${otherOption}Text`);
+                
+                if (otherCheckbox.checked) {
+                    otherCheckbox.checked = false;
+                    otherText.classList.remove('crossed-out');
+                }
+                
+                otherText.classList.add('crossed-out');
+                
+                // Show popup for selected option
+                showOptionPopup(option);
+                
+                const optionName = option === 'A' ? 'Universal Studios Return' : 'Orlando Exploration';
+                showAchievement(`🎯 ${optionName} chosen! Your final day adventure is set! ✨`);
+            } else {
+                const otherOption = option === 'A' ? 'B' : 'A';
+                const otherText = document.getElementById(`option${otherOption}Text`);
+                otherText.classList.remove('crossed-out');
+            }
+        }
+        
+        function showOptionPopup(option) {
+            const popupId = option === 'A' ? 'optionAPopup' : 'optionBPopup';
+            const popup = document.getElementById(popupId);
+            popup.classList.add('show');
+        }
+        
+        function closeOptionPopup() {
+            document.getElementById('optionAPopup').classList.remove('show');
+            document.getElementById('optionBPopup').classList.remove('show');
+        }
+        
+        // Achievement system
+        function showAchievement(message) {
+            const achievement = document.createElement('div');
+            achievement.className = 'achievement';
+            achievement.textContent = message;
+            document.body.appendChild(achievement);
+            
+            setTimeout(() => {
+                achievement.remove();
+            }, 4000);
+        }
+        
+        // Initialize on load
+        window.addEventListener('load', initializeMagic);
+    </script>
+</body>
+</html>
