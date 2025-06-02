@@ -58,8 +58,11 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ],
-  "categories": ["entertainment", "lifestyle"],
+  ],  "categories": ["entertainment", "lifestyle"],
+  "storage": {
+    "estimate": "25MB"
+  },
+  "permissions": ["persistent-storage"],
   "screenshots": [
     {
       "src": "/screenshot-wide.png",

@@ -1361,13 +1361,68 @@
         window.addEventListener('offline', () => {
             showAchievement('📡 Connection lost - but magic continues offline! ✨');
         });
-        
-        // CLEAN INITIALIZATION
+          // CLEAN INITIALIZATION
         function initializeMagic() {
             createStars();
             createFloatingEmojis();
+            initializeStorage(); // Initialize persistent storage
             loadSavedPhotos(); // Load any previously saved photos
             showScreen('sortingScreen');
+        }
+
+        // Initialize persistent storage
+        async function initializeStorage() {
+            try {
+                // Request persistent storage
+                if ('storage' in navigator && 'persist' in navigator.storage) {
+                    const persistent = await navigator.storage.persist();
+                    console.log(`🗄️ Persistent storage: ${persistent ? 'granted' : 'denied'}`);
+                    
+                    if (persistent) {
+                        showAchievement('📱 Persistent storage enabled - photos will be saved permanently! ✨');
+                    }
+                }
+
+                // Initialize IndexedDB
+                await initializeIndexedDB();
+            } catch (error) {
+                console.log('🗄️ Storage initialization failed, using localStorage fallback:', error);
+            }
+        }
+
+        // IndexedDB setup for robust photo storage
+        let photoDB = null;
+        
+        async function initializeIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('MagicalAdventureDB', 2);
+                
+                request.onerror = () => {
+                    console.log('📸 IndexedDB failed to open, using localStorage fallback');
+                    resolve(null);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    // Create photos store if it doesn't exist
+                    if (!db.objectStoreNames.contains('photos')) {
+                        const photoStore = db.createObjectStore('photos', { keyPath: 'id' });
+                        photoStore.createIndex('timestamp', 'timestamp', { unique: false });
+                    }
+                    
+                    // Create captions store if it doesn't exist
+                    if (!db.objectStoreNames.contains('captions')) {
+                        const captionStore = db.createObjectStore('captions', { keyPath: 'id' });
+                    }
+                };
+                
+                request.onsuccess = (event) => {
+                    photoDB = event.target.result;
+                    console.log('📸 IndexedDB initialized successfully');
+                    resolve(photoDB);
+                };
+            });
         }
         
         // CLEAN SCREEN MANAGEMENT
@@ -1642,13 +1697,12 @@
                 }, i * 200);
             }
         }
-        
-        // Enhanced photo upload with offline support
+          // Enhanced photo upload with persistent storage
         function uploadPhoto(input, photoId) {
             const file = input.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = async function(e) {
                     const photoContainer = document.getElementById(photoId);
                     photoContainer.innerHTML = '';
                     
@@ -1659,75 +1713,194 @@
                     
                     photoContainer.appendChild(img);
                     
-                    // Save photo with offline support
-                    try {
-                        localStorage.setItem(`magical_photo_${photoId}`, e.target.result);
-                        console.log(`📸 Photo saved for ${photoId}`);
-                        
-                        // Register background sync for photo upload when online
-                        if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
-                            navigator.serviceWorker.ready.then(registration => {
-                                return registration.sync.register('photo-upload-sync');
-                            }).catch(error => {
-                                console.log('📸 Background sync registration failed:', error);
-                            });
-                        }
-                        
-                    } catch (error) {
-                        console.log('📸 Photo saved in memory only (localStorage not available or full)');
-                    }
+                    // Save photo with robust persistence
+                    await savePhotoData(photoId, e.target.result);
                     
                     showAchievement("📸 Magical Memory Captured! ✨");
                 };
                 reader.readAsDataURL(file);
             }
         }
-        
-        // Load saved photos from localStorage
-        function loadSavedPhotos() {
-            for (let i = 1; i <= 12; i++) { // Updated to only load 12 photos as shown in the DOM
-                const photoId = `photo${i}`;
+
+        // Save photo data with IndexedDB and localStorage fallback
+        async function savePhotoData(photoId, photoData) {
+            const photoRecord = {
+                id: photoId,
+                data: photoData,
+                timestamp: Date.now()
+            };
+
+            // Try IndexedDB first
+            if (photoDB) {
                 try {
-                    const savedPhoto = localStorage.getItem(`magical_photo_${photoId}`);
-                    if (savedPhoto) {
-                        const photoContainer = document.getElementById(photoId);
-                        if (photoContainer) {
-                            photoContainer.innerHTML = '';
-                            
-                            const img = document.createElement('img');
-                            img.src = savedPhoto;
-                            img.className = 'uploaded-image';
-                            img.alt = 'Magical Memory';
-                            
-                            photoContainer.appendChild(img);
-                            console.log(`📸 Photo restored for ${photoId}`);
-                        }
-                    }
+                    const transaction = photoDB.transaction(['photos'], 'readwrite');
+                    const store = transaction.objectStore('photos');
+                    await new Promise((resolve, reject) => {
+                        const request = store.put(photoRecord);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                    console.log(`📸 Photo saved to IndexedDB for ${photoId}`);
                     
-                    // Load saved caption
-                    const savedCaption = localStorage.getItem(`magical_caption_${photoId}`);
-                    if (savedCaption) {
-                        const photoElement = document.getElementById(photoId);
-                        if (photoElement && photoElement.parentElement) {
-                            const captionInput = photoElement.parentElement.querySelector('.polaroid-caption');
-                            if (captionInput) {
-                                captionInput.value = savedCaption;
-                            }
-                        }
+                    // Register background sync for photo upload when online
+                    if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+                        navigator.serviceWorker.ready.then(registration => {
+                            return registration.sync.register('photo-upload-sync');
+                        }).catch(error => {
+                            console.log('📸 Background sync registration failed:', error);
+                        });
                     }
+                    return;
                 } catch (error) {
-                    console.log(`📸 Could not load saved data for ${photoId}`);
+                    console.log('📸 IndexedDB save failed, trying localStorage:', error);
+                }
+            }
+
+            // Fallback to localStorage
+            try {
+                localStorage.setItem(`magical_photo_${photoId}`, photoData);
+                console.log(`📸 Photo saved to localStorage for ${photoId}`);
+                
+                // Register background sync for photo upload when online
+                if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+                    navigator.serviceWorker.ready.then(registration => {
+                        return registration.sync.register('photo-upload-sync');
+                    }).catch(error => {
+                        console.log('📸 Background sync registration failed:', error);
+                    });
+                }
+            } catch (error) {
+                console.log('📸 Photo saved in memory only (storage not available or full):', error);
+                showAchievement("⚠️ Storage full - photos may not persist after closing app");
+            }
+        }
+          // Load saved photos from IndexedDB or localStorage
+        async function loadSavedPhotos() {
+            for (let i = 1; i <= 12; i++) {
+                const photoId = `photo${i}`;
+                await loadSinglePhoto(photoId);
+                await loadSingleCaption(photoId);
+            }
+        }
+
+        // Load a single photo from storage
+        async function loadSinglePhoto(photoId) {
+            let savedPhoto = null;
+
+            // Try IndexedDB first
+            if (photoDB) {
+                try {
+                    const transaction = photoDB.transaction(['photos'], 'readonly');
+                    const store = transaction.objectStore('photos');
+                    savedPhoto = await new Promise((resolve, reject) => {
+                        const request = store.get(photoId);
+                        request.onsuccess = () => resolve(request.result?.data || null);
+                        request.onerror = () => reject(request.error);
+                    });
+                } catch (error) {
+                    console.log(`📸 IndexedDB load failed for ${photoId}, trying localStorage:`, error);
+                }
+            }
+
+            // Fallback to localStorage
+            if (!savedPhoto) {
+                try {
+                    savedPhoto = localStorage.getItem(`magical_photo_${photoId}`);
+                } catch (error) {
+                    console.log(`📸 Could not load photo for ${photoId}:`, error);
+                    return;
+                }
+            }
+
+            // Display the photo if found
+            if (savedPhoto) {
+                const photoContainer = document.getElementById(photoId);
+                if (photoContainer) {
+                    photoContainer.innerHTML = '';
+                    
+                    const img = document.createElement('img');
+                    img.src = savedPhoto;
+                    img.className = 'uploaded-image';
+                    img.alt = 'Magical Memory';
+                    
+                    photoContainer.appendChild(img);
+                    console.log(`📸 Photo restored for ${photoId}`);
                 }
             }
         }
-        
-        // Save polaroid caption to localStorage
-        function savePolaroidCaption(input, photoId) {
+
+        // Load a single caption from storage
+        async function loadSingleCaption(photoId) {
+            let savedCaption = null;
+
+            // Try IndexedDB first
+            if (photoDB) {
+                try {
+                    const transaction = photoDB.transaction(['captions'], 'readonly');
+                    const store = transaction.objectStore('captions');
+                    const captionRecord = await new Promise((resolve, reject) => {
+                        const request = store.get(photoId);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                    savedCaption = captionRecord?.caption;
+                } catch (error) {
+                    console.log(`💬 IndexedDB caption load failed for ${photoId}, trying localStorage:`, error);
+                }
+            }
+
+            // Fallback to localStorage
+            if (!savedCaption) {
+                try {
+                    savedCaption = localStorage.getItem(`magical_caption_${photoId}`);
+                } catch (error) {
+                    console.log(`💬 Could not load caption for ${photoId}:`, error);
+                    return;
+                }
+            }
+
+            // Set the caption if found
+            if (savedCaption) {
+                const photoElement = document.getElementById(photoId);
+                if (photoElement && photoElement.parentElement) {
+                    const captionInput = photoElement.parentElement.querySelector('.polaroid-caption');
+                    if (captionInput) {
+                        captionInput.value = savedCaption;
+                    }
+                }
+            }
+        }
+          // Save polaroid caption with robust persistence
+        async function savePolaroidCaption(input, photoId) {
+            const captionRecord = {
+                id: photoId,
+                caption: input.value,
+                timestamp: Date.now()
+            };
+
+            // Try IndexedDB first
+            if (photoDB) {
+                try {
+                    const transaction = photoDB.transaction(['captions'], 'readwrite');
+                    const store = transaction.objectStore('captions');
+                    await new Promise((resolve, reject) => {
+                        const request = store.put(captionRecord);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                    console.log(`💬 Caption saved to IndexedDB for ${photoId}: "${input.value}"`);
+                    return;
+                } catch (error) {
+                    console.log('💬 IndexedDB caption save failed, trying localStorage:', error);
+                }
+            }
+
+            // Fallback to localStorage
             try {
                 localStorage.setItem(`magical_caption_${photoId}`, input.value);
-                console.log(`💬 Caption saved for ${photoId}: "${input.value}"`);
+                console.log(`💬 Caption saved to localStorage for ${photoId}: "${input.value}"`);
             } catch (error) {
-                console.log('💬 Caption saved in memory only (localStorage not available)');
+                console.log('💬 Caption save failed:', error);
             }
         }
         
