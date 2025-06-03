@@ -564,6 +564,7 @@
             display: inline-block;
             transition: all 0.3s ease;
             cursor: pointer;
+            text-align: center;
         }
         
         .polaroid:nth-child(even) {
@@ -586,6 +587,7 @@
             border-radius: 3px;
             overflow: hidden;
             position: relative;
+            margin: 0 auto;
         }
         
         .polaroid-caption {
@@ -614,69 +616,58 @@
             object-fit: cover;
             border-radius: 3px;
             display: block;
+            margin: 0 auto;
         }
         
+        /* Hide file input elements */
         input[type="file"] {
             display: none !important;
+            visibility: hidden !important;
+            position: absolute !important;
+            left: -9999px !important;
         }
         
-        .shopping-item {
-            display: flex;
-            align-items: center;
-            margin: 0.5rem 0;
-            font-size: 1.1rem;
-        }
-        
-        .shopping-item input[type="checkbox"] {
-            margin-right: 1rem;
-            transform: scale(1.5);
-        }
-        
-        .shopping-item input[type="checkbox"]:checked + span {
-            text-decoration: line-through;
-            opacity: 0.7;
-        }
-        
-        .option-item {
-            display: flex;
-            align-items: center;
-            margin: 0.5rem 0;
-        }
-        
-        .option-item input[type="checkbox"] {
-            margin-right: 1rem;
-            transform: scale(1.3);
-            cursor: pointer;
-        }
-        
-        .option-item span.crossed-out {
-            text-decoration: line-through;
-            opacity: 0.5;
-            color: #888;
-        }
-        
+        /* Achievement popup styles */
         .achievement {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: linear-gradient(45deg, #8b0000, #dc143c);
+            background: linear-gradient(45deg, #8b4513, #d4af37);
             color: white;
-            padding: 15px 25px;
+            padding: 15px 20px;
             border-radius: 10px;
             font-family: 'Cinzel', serif;
-            font-weight: bold;
-            z-index: 9999;
-            animation: achievementSlide 4s ease-in-out forwards;
+            font-size: 1rem;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(139, 69, 19, 0.6);
+            z-index: 10001;
+            animation: achievementSlideIn 0.5s ease-out, achievementSlideOut 0.5s ease-in 2.5s forwards;
             max-width: 300px;
             text-align: center;
-            box-shadow: 0 8px 32px rgba(139, 0, 0, 0.4);
+            border: 2px solid #d4af37;
+            backdrop-filter: blur(5px);
         }
         
-        @keyframes achievementSlide {
-            0% { transform: translateX(100%); opacity: 0; }
-            10% { transform: translateX(0); opacity: 1; }
-            90% { transform: translateX(0); opacity: 1; }
-            100% { transform: translateX(100%); opacity: 0; }
+        @keyframes achievementSlideIn {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes achievementSlideOut {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
         }
         
         @media (max-width: 768px) {
@@ -698,12 +689,20 @@
             }
             
             .polaroid {
-                margin: 0.5rem;
+                margin: 0.5rem auto;
+                display: block;
+                width: 180px;
             }
             
             .polaroid-image {
                 width: 150px;
                 height: 112px;
+                margin: 0 auto;
+            }
+            
+            .polaroid-caption {
+                width: 150px;
+                margin: 10px auto 0 auto;
             }
         }
     </style>
@@ -1089,7 +1088,7 @@
                     </div>
                     
                     <!-- Photo Grid -->
-                    <div style="text-align: center;">
+                    <div style="text-align: center; display: flex; flex-wrap: wrap; justify-content: center;" id="photoAlbum-grid">
                         <div class="polaroid" onclick="document.getElementById('photoUpload1').click()">
                             <div class="polaroid-image" id="photo1">
                                 <div style="text-align: center; color: #888; font-size: 1rem;">
@@ -1419,6 +1418,7 @@
         function initializeMusic() {
             backgroundMusic = document.getElementById('backgroundMusic');
             // Don't auto-play due to browser restrictions
+       
         }
 
         // Toggle Music
@@ -1427,6 +1427,7 @@
             
             if (!backgroundMusic) {
                 backgroundMusic = document.getElementById('backgroundMusic');
+           
             }
             
             if (musicPlaying) {
@@ -1833,7 +1834,7 @@
             
             setTimeout(() => {
                 achievement.remove();
-            }, 4000);
+            }, 3000);
         }
 
         // INITIALIZATION OF STORAGE AND SERVICE WORKER
@@ -2234,5 +2235,4 @@
             initializeMagic();
         });
     </script>
-</body>
-</html>
+</body></html>
