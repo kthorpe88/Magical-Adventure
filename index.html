@@ -1411,173 +1411,54 @@
             await initializeStorage();
             await initializeServiceWorker();
             initializeMusic();
+            initializeNetworkMonitoring();
             showScreen('sortingScreen');
         }
 
-        // Initialize Service Worker
-        async function initializeServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                try {
-                    console.log('🪄 Registering Service Worker...');
-                    serviceWorkerRegistration = await navigator.serviceWorker.register('./sw.js');
-                    
-                    console.log('🪄 Service Worker registered successfully:', serviceWorkerRegistration);
-                    
-                    // Listen for messages from service worker
-                    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
-                    
-                    // Register for background sync
-                    if ('sync' in serviceWorkerRegistration) {
-                        console.log('🪄 Background sync supported');
-                    }
-                    
-                    // Check for service worker updates
-                    serviceWorkerRegistration.addEventListener('updatefound', () => {
-                        console.log('🪄 Service Worker update found');
-                        const newWorker = serviceWorkerRegistration.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                showAchievement('✨ App updated! Refresh for new features! ✨');
-                            }
-                        });
-                    });
-                    
-                } catch (error) {
-                    console.log('🪄 Service Worker registration failed:', error);
-                }
+        // Initialize Music
+        function initializeMusic() {
+            backgroundMusic = document.getElementById('backgroundMusic');
+            // Don't auto-play due to browser restrictions
+        }
+
+        // Toggle Music
+        function toggleMusic() {
+            const musicBtn = document.getElementById('musicBtn');
+            
+            if (!backgroundMusic) {
+                backgroundMusic = document.getElementById('backgroundMusic');
+            }
+            
+            if (musicPlaying) {
+                backgroundMusic.pause();
+                musicBtn.textContent = '🎵';
+                musicPlaying = false;
             } else {
-                console.log('🪄 Service Worker not supported');
+                backgroundMusic.play().then(() => {
+                    musicBtn.textContent = '🔇';
+                    musicPlaying = true;
+                }).catch(error => {
+                    console.log('Music play failed:', error);
+                    showAchievement('🎵 Click again to start music ✨');
+                });
             }
         }
 
-        // Handle messages from service worker
-        function handleServiceWorkerMessage(event) {
-            const { type, data } = event.data;
-            
-            switch (type) {
-                case 'PHOTO_SYNC_SUCCESS':
-                    showAchievement('📸 Photo synced successfully! ✨');
-                    break;
-                case 'ACTION_SYNC_SUCCESS':
-                    showAchievement('⚡ Progress synced! ✨');
-                    break;
-                case 'MAGICAL_DATA_SYNC_SUCCESS':
-                    showAchievement('🪄 Magical data synced! ✨');
-                    break;
-                default:
-                    console.log('🪄 Unknown message from service worker:', event.data);
+        // Start magical music
+        function startMagicalMusic() {
+            if (!musicPlaying && backgroundMusic) {
+                backgroundMusic.play().then(() => {
+                    musicPlaying = true;
+                    document.getElementById('musicBtn').textContent = '🔇';
+                }).catch(error => {
+                    console.log('Auto-play music failed (browser restriction):', error);
+                });
             }
         }
 
-        // Register background sync for offline actions
-        async function registerBackgroundSync(tag) {
-            if (serviceWorkerRegistration && 'sync' in serviceWorkerRegistration) {
-                try {
-                    await serviceWorkerRegistration.sync.register(tag);
-                    console.log(`🪄 Background sync registered: ${tag}`);
-                } catch (error) {
-                    console.log('🪄 Background sync registration failed:', error);
-                }
-            }
-        }
-
-        // Send message to service worker
-        function sendMessageToServiceWorker(message) {
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage(message);
-            }
-        }
-
-        // SCREEN MANAGEMENT
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            
-            document.getElementById(screenId).classList.add('active');
-        }
-        
-        // SECTION REVEAL SYSTEM
-        function revealSection(sectionId) {
-            const content = document.getElementById(sectionId);
-            if (content) {
-                content.classList.add('revealed');
-                showAchievement(`✨ ${sectionId} revealed! ✨`);
-            }
-        }
-        
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.width = Math.random() * 3 + 1 + 'px';
-                star.style.height = star.style.width;
-                star.style.animationDelay = Math.random() * 2 + 's';
-                star.style.animationDuration = Math.random() * 3 + 1 + 's';
-                starsContainer.appendChild(star);
-            }
-        }
-        
-        function createFloatingEmojis() {
-            const harryPotterEmojis = [
-                '🦄', '🪄', '🦉', '⚡', '🐍', '🦅', '🦁', '🦡', 
-                '📜', '🦄', '🦄', '⭐', '🌙', '🧙‍♀️', '🧙‍♂️',
-                '🏰', '🚂', '🍺', '🐸', '🕯️', '🦄', '🗝️', '💎',
-                '🦄', '🦄', '🦄', '🦄', '✨', '💫', '🌟'
-            ];
-            
-            const floatingContainer = document.getElementById('floatingEmojis');
-            
-            // Clear container completely
-            if (floatingContainer) {
-                floatingContainer.innerHTML = '';
-            }
-            
-            function createSingleEmoji() {
-                if (!document.getElementById('floatingEmojis')) return;
-                
-                const emoji = document.createElement('div');
-                emoji.className = 'floating-emoji';
-                emoji.textContent = harryPotterEmojis[Math.floor(Math.random() * harryPotterEmojis.length)];
-                
-                // Position horizontally only
-                emoji.style.left = Math.random() * 90 + 5 + '%'; // 5% to 95% to avoid edges
-                
-                // Set slower animation duration
-                const duration = 15 + Math.random() * 10; // 15-25 seconds (much slower)
-                emoji.style.animationDuration = duration + 's';
-                emoji.style.animationDelay = Math.random() * 5 + 's'; // Longer delays
-                
-                floatingContainer.appendChild(emoji);
-                
-                // Remove after animation
-                setTimeout(() => {
-                    if (emoji && emoji.parentNode === floatingContainer) {
-                        floatingContainer.removeChild(emoji);
-                    }
-                }, (duration + 5) * 1000); // Longer cleanup time
-            }
-            
-            // Create initial batch with longer delays
-            for (let i = 0; i < 6; i++) { // Fewer emojis
-                setTimeout(() => createSingleEmoji(), i * 2000); // 2 second intervals
-            }
-            
-            // Continue creating with longer intervals
-            const emojiInterval = setInterval(() => {
-                if (document.getElementById('floatingEmojis')) {
-                    createSingleEmoji();
-                } else {
-                    clearInterval(emojiInterval);
-                }
-            }, 4000); // Every 4 seconds instead of 2.5
-        }
-        
-        // Sorting functions
+        // SORTING HAT FUNCTIONS
         function startSorting() {
+            console.log('🎩 Starting sorting ceremony...');
             startMagicalMusic();
             showQuestion();
         }
@@ -1627,7 +1508,7 @@
                 <h2 style="color: #8b4513; margin-bottom: 1rem;">🎩 The Sorting Hat Has Spoken! 🎩</h2>
                 <div style="font-size: 3rem; margin: 2rem 0;">${houseData.emoji}</div>
                 <h3 style="color: #8b0000; margin-bottom: 1rem;">${houseData.name}!</h3>
-                <p style="font-style: italic; margin-bottom: 2rem;">"Welcome to your house, Stephanie! Kyle's magical journey begins now..."</p>
+                <p style="font-style: italic; margin-bottom: 2rem;">"Welcome to your house, Stephanie! Your magical journey begins now..."</p>
                 <button class="quiz-option" onclick="continueToTitle()">Continue to Your Birthday Surprise!</button>
             `;
         }
@@ -1666,97 +1547,19 @@
                 checkbox.checked = false;
             });
             
-            document.getElementById('optionA').checked = false;
-            document.getElementById('optionB').checked = false;
-            document.getElementById('optionAText').classList.remove('crossed-out');
-            document.getElementById('optionBText').classList.remove('crossed-out');
+            const optionA = document.getElementById('optionA');
+            const optionB = document.getElementById('optionB');
+            if (optionA) optionA.checked = false;
+            if (optionB) optionB.checked = false;
+            
+            const optionAText = document.getElementById('optionAText');
+            const optionBText = document.getElementById('optionBText');
+            if (optionAText) optionAText.classList.remove('crossed-out');
+            if (optionBText) optionBText.classList.remove('crossed-out');
             
             closeOptionPopup();
             
             showScreen('sortingScreen');
-        }
-        
-        // Patronus
-        function generatePatronus() {
-            const randomPatronus = patronusAnimals[Math.floor(Math.random() * patronusAnimals.length)];
-            document.getElementById('patronusAnimal').textContent = randomPatronus.animal;
-            document.getElementById('patronusMessage').textContent = 
-                `Your Patronus is a ${randomPatronus.name}! This represents ${randomPatronus.meaning}.`;
-            document.getElementById('patronusResult').style.display = 'block';
-        }
-        
-        // Service Worker registration and communication
-        async function initializeServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                try {
-                    console.log('🪄 Registering Service Worker...');
-                    serviceWorkerRegistration = await navigator.serviceWorker.register('./sw.js');
-                    
-                    console.log('🪄 Service Worker registered successfully:', serviceWorkerRegistration);
-                    
-                    // Listen for messages from service worker
-                    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
-                    
-                    // Register for background sync
-                    if ('sync' in serviceWorkerRegistration) {
-                        console.log('🪄 Background sync supported');
-                    }
-                    
-                    // Check for service worker updates
-                    serviceWorkerRegistration.addEventListener('updatefound', () => {
-                        console.log('🪄 Service Worker update found');
-                        const newWorker = serviceWorkerRegistration.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                showAchievement('✨ App updated! Refresh for new features! ✨');
-                            }
-                        });
-                    });
-                    
-                } catch (error) {
-                    console.log('🪄 Service Worker registration failed:', error);
-                }
-            } else {
-                console.log('🪄 Service Worker not supported');
-            }
-        }
-
-        // Handle messages from service worker
-        function handleServiceWorkerMessage(event) {
-            const { type, data } = event.data;
-            
-            switch (type) {
-                case 'PHOTO_SYNC_SUCCESS':
-                    showAchievement('📸 Photo synced successfully! ✨');
-                    break;
-                case 'ACTION_SYNC_SUCCESS':
-                    showAchievement('⚡ Progress synced! ✨');
-                    break;
-                case 'MAGICAL_DATA_SYNC_SUCCESS':
-                    showAchievement('🪄 Magical data synced! ✨');
-                    break;
-                default:
-                    console.log('🪄 Unknown message from service worker:', event.data);
-            }
-        }
-
-        // Register background sync for offline actions
-        async function registerBackgroundSync(tag) {
-            if (serviceWorkerRegistration && 'sync' in serviceWorkerRegistration) {
-                try {
-                    await serviceWorkerRegistration.sync.register(tag);
-                    console.log(`🪄 Background sync registered: ${tag}`);
-                } catch (error) {
-                    console.log('🪄 Background sync registration failed:', error);
-                }
-            }
-        }
-
-        // Send message to service worker
-        function sendMessageToServiceWorker(message) {
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage(message);
-            }
         }
 
         // SCREEN MANAGEMENT
@@ -1776,187 +1579,8 @@
                 showAchievement(`✨ ${sectionId} revealed! ✨`);
             }
         }
-        
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            for (let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.width = Math.random() * 3 + 1 + 'px';
-                star.style.height = star.style.width;
-                star.style.animationDelay = Math.random() * 2 + 's';
-                star.style.animationDuration = Math.random() * 3 + 1 + 's';
-                starsContainer.appendChild(star);
-            }
-        }
-        
-        function createFloatingEmojis() {
-            const harryPotterEmojis = [
-                '🦄', '🪄', '🦉', '⚡', '🐍', '🦅', '🦁', '🦡', 
-                '📜', '🦄', '🦄', '⭐', '🌙', '🧙‍♀️', '🧙‍♂️',
-                '🏰', '🚂', '🍺', '🐸', '🕯️', '🦄', '🗝️', '💎',
-                '🦄', '🦄', '🦄', '🦄', '✨', '💫', '🌟'
-            ];
-            
-            const floatingContainer = document.getElementById('floatingEmojis');
-            
-            // Clear container completely
-            if (floatingContainer) {
-                floatingContainer.innerHTML = '';
-            }
-            
-            function createSingleEmoji() {
-                if (!document.getElementById('floatingEmojis')) return;
-                
-                const emoji = document.createElement('div');
-                emoji.className = 'floating-emoji';
-                emoji.textContent = harryPotterEmojis[Math.floor(Math.random() * harryPotterEmojis.length)];
-                
-                // Position horizontally only
-                emoji.style.left = Math.random() * 90 + 5 + '%'; // 5% to 95% to avoid edges
-                
-                // Set slower animation duration
-                const duration = 15 + Math.random() * 10; // 15-25 seconds (much slower)
-                emoji.style.animationDuration = duration + 's';
-                emoji.style.animationDelay = Math.random() * 5 + 's'; // Longer delays
-                
-                floatingContainer.appendChild(emoji);
-                
-                // Remove after animation
-                setTimeout(() => {
-                    if (emoji && emoji.parentNode === floatingContainer) {
-                        floatingContainer.removeChild(emoji);
-                    }
-                }, (duration + 5) * 1000); // Longer cleanup time
-            }
-            
-            // Create initial batch with longer delays
-            for (let i = 0; i < 6; i++) { // Fewer emojis
-                setTimeout(() => createSingleEmoji(), i * 2000); // 2 second intervals
-            }
-            
-            // Continue creating with longer intervals
-            const emojiInterval = setInterval(() => {
-                if (document.getElementById('floatingEmojis')) {
-                    createSingleEmoji();
-                } else {
-                    clearInterval(emojiInterval);
-                }
-            }, 4000); // Every 4 seconds instead of 2.5
-        }
-        
-        // Sorting functions
-        function startSorting() {
-            startMagicalMusic();
-            showQuestion();
-        }
-        
-        function showQuestion() {
-            if (currentQuestionIndex >= sortingQuestions.length) {
-                finishSorting();
-                return;
-            }
-            
-            const question = sortingQuestions[currentQuestionIndex];
-            document.getElementById('quizQuestion').style.display = 'block';
-            document.getElementById('questionText').textContent = question.question;
-            
-            const optionsContainer = document.getElementById('questionOptions');
-            optionsContainer.innerHTML = '';
-            
-            question.options.forEach(option => {
-                const button = document.createElement('button');
-                button.className = 'quiz-option';
-                button.textContent = option.text;
-                button.onclick = () => answerQuestion(option.house);
-                optionsContainer.appendChild(button);
-            });
-        }
-        
-        function answerQuestion(house) {
-            houseScores[house]++;
-            currentQuestionIndex++;
-            showQuestion();
-        }
-        
-        function finishSorting() {
-            let maxScore = 0;
-            let selectedHouse = 'gryffindor';
-            
-            for (let house in houseScores) {
-                if (houseScores[house] > maxScore) {
-                    maxScore = houseScores[house];
-                    selectedHouse = house;
-                }
-            }
-            
-            const houseData = houses.find(h => h.class === selectedHouse);
-            
-            document.getElementById('quizQuestion').innerHTML = `
-                <h2 style="color: #8b4513; margin-bottom: 1rem;">🎩 The Sorting Hat Has Spoken! 🎩</h2>
-                <div style="font-size: 3rem; margin: 2rem 0;">${houseData.emoji}</div>
-                <h3 style="color: #8b0000; margin-bottom: 1rem;">${houseData.name}!</h3>
-                <p style="font-style: italic; margin-bottom: 2rem;">"Welcome to your house, Stephanie! Kyle's magical journey begins now..."</p>
-                <button class="quiz-option" onclick="continueToTitle()">Continue to Your Birthday Surprise!</button>
-            `;
-        }
-        
-        function continueToTitle() {
-            showScreen('titleScreen');
-        }
-        
-        function startJourney() {
-            showScreen('contentScreen');
-            setTimeout(() => loadSavedPhotos(), 100);
-            showAchievement("🎂 Your magical birthday adventure begins! ✨");
-        }
-        
-        function goHome() {
-            currentQuestionIndex = 0;
-            houseScores = { gryffindor: 0, hufflepuff: 0, ravenclaw: 0, slytherin: 0 };
-            selectedWand = null;
-            
-            document.getElementById('quizQuestion').style.display = 'none';
-            document.getElementById('quizQuestion').innerHTML = `
-                <h3 id="questionText"></h3>
-                <div id="questionOptions"></div>
-            `;
-            
-            document.getElementById('patronusResult').style.display = 'none';
-            
-            document.querySelectorAll('.wand').forEach(w => w.classList.remove('selected'));
-            document.getElementById('wandMessage').textContent = '';
-            
-            document.querySelectorAll('.section-content').forEach(content => {
-                content.classList.remove('revealed');
-            });
-            
-            document.querySelectorAll('.shopping-item input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            
-            document.getElementById('optionA').checked = false;
-            document.getElementById('optionB').checked = false;
-            document.getElementById('optionAText').classList.remove('crossed-out');
-            document.getElementById('optionBText').classList.remove('crossed-out');
-            
-            closeOptionPopup();
-            
-            showScreen('sortingScreen');
-        }
-        
-        // Patronus
-        function generatePatronus() {
-            const randomPatronus = patronusAnimals[Math.floor(Math.random() * patronusAnimals.length)];
-            document.getElementById('patronusAnimal').textContent = randomPatronus.animal;
-            document.getElementById('patronusMessage').textContent = 
-                `Your Patronus is a ${randomPatronus.name}! This represents ${randomPatronus.meaning}.`;
-            document.getElementById('patronusResult').style.display = 'block';
-        }
-        
-        // Enhanced wand selection with service worker sync
+
+        // WAND SELECTION
         function selectWand(wandElement, wandType) {
             document.querySelectorAll('.wand').forEach(w => w.classList.remove('selected'));
             wandElement.classList.add('selected');
@@ -1982,7 +1606,209 @@
             }
         }
 
-        // Enhanced achievement system with offline support
+        // SPELL CASTING
+        function castMagicalSpell(event, emoji, spellName) {
+            const widget = event.target;
+            
+            // Create magical effect
+            for (let i = 0; i < 8; i++) {
+                setTimeout(() => {
+                    createSpellEffect(widget, emoji);
+                }, i * 200);
+            }
+            
+            showAchievement(`🪄 You cast ${spellName}! ✨`);
+        }
+
+        function castLoveSpell(event, emoji, spellName) {
+            const widget = event.target;
+            
+            // Create love spell effect
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    createLoveSpellEffect(widget, emoji);
+                }, i * 150);
+            }
+            
+            showAchievement(`💕 ${spellName} cast with eternal love! ✨`);
+        }
+
+        function createSpellEffect(source, emoji) {
+            const effect = document.createElement('div');
+            effect.textContent = emoji;
+            effect.style.position = 'fixed';
+            effect.style.fontSize = '2rem';
+            effect.style.pointerEvents = 'none';
+            effect.style.zIndex = '9999';
+            
+            const rect = source.getBoundingClientRect();
+            effect.style.left = rect.left + rect.width/2 + 'px';
+            effect.style.top = rect.top + rect.height/2 + 'px';
+            
+            document.body.appendChild(effect);
+            
+            // Animate the effect
+            const animation = effect.animate([
+                { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                { transform: `translate(${(Math.random() - 0.5) * 200}px, ${-100 - Math.random() * 100}px) scale(0.5)`, opacity: 0 }
+            ], {
+                duration: 1500,
+                easing: 'ease-out'
+            });
+            
+            animation.addEventListener('finish', () => {
+                effect.remove();
+            });
+        }
+
+        function createLoveSpellEffect(source, emoji) {
+            const effect = document.createElement('div');
+            effect.textContent = emoji;
+            effect.style.position = 'fixed';
+            effect.style.fontSize = '1.5rem';
+            effect.style.pointerEvents = 'none';
+            effect.style.zIndex = '9999';
+            effect.style.filter = 'drop-shadow(0 0 10px #ff69b4)';
+            
+            const rect = source.getBoundingClientRect();
+            effect.style.left = rect.left + rect.width/2 + 'px';
+            effect.style.top = rect.top + rect.height/2 + 'px';
+            
+            document.body.appendChild(effect);
+            
+            // Heart-shaped animation
+            const animation = effect.animate([
+                { transform: 'translate(0, 0) scale(1) rotate(0deg)', opacity: 1 },
+                { transform: `translate(${Math.sin(Math.PI) * 80}px, ${-80}px) scale(1.2) rotate(180deg)`, opacity: 0.8 },
+                { transform: `translate(${Math.sin(Math.PI * 2) * 40}px, ${-160}px) scale(0.8) rotate(360deg)`, opacity: 0 }
+            ], {
+                duration: 2000,
+                easing: 'ease-out'
+            });
+            
+            animation.addEventListener('finish', () => {
+                effect.remove();
+            });
+        }
+
+        // PATRONUS
+        function generatePatronus() {
+            const randomPatronus = patronusAnimals[Math.floor(Math.random() * patronusAnimals.length)];
+            document.getElementById('patronusAnimal').textContent = randomPatronus.animal;
+            document.getElementById('patronusMessage').textContent = 
+                `Your Patronus is a ${randomPatronus.name}! This represents ${randomPatronus.meaning}.`;
+            document.getElementById('patronusResult').style.display = 'block';
+            showAchievement(`🦌 Your Patronus is a ${randomPatronus.name}! ✨`);
+        }
+
+        // OPTION SELECTION
+        function selectOption(option, checkbox) {
+            const optionACheckbox = document.getElementById('optionA');
+            const optionBCheckbox = document.getElementById('optionB');
+            const optionAText = document.getElementById('optionAText');
+            const optionBText = document.getElementById('optionBText');
+            
+            if (option === 'A') {
+                if (checkbox.checked) {
+                    optionBCheckbox.checked = false;
+                    optionBText.classList.remove('crossed-out');
+                    optionAText.classList.add('crossed-out');
+                    showOptionPopup('A');
+                } else {
+                    optionAText.classList.remove('crossed-out');
+                }
+            } else if (option === 'B') {
+                if (checkbox.checked) {
+                    optionACheckbox.checked = false;
+                    optionAText.classList.remove('crossed-out');
+                    optionBText.classList.add('crossed-out');
+                    showOptionPopup('B');
+                } else {
+                    optionBText.classList.remove('crossed-out');
+                }
+            }
+        }
+
+        function showOptionPopup(option) {
+            const popupId = option === 'A' ? 'optionAPopup' : 'optionBPopup';
+            const popup = document.getElementById(popupId);
+            if (popup) {
+                popup.classList.add('show');
+            }
+        }
+
+        function closeOptionPopup() {
+            document.querySelectorAll('.option-popup-overlay').forEach(popup => {
+                popup.classList.remove('show');
+            });
+        }
+
+        // VISUAL EFFECTS
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.animationDuration = Math.random() * 3 + 1 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        function createFloatingEmojis() {
+            const harryPotterEmojis = [
+                '🦄', '🪄', '🦉', '⚡', '🐍', '🦅', '🦁', '🦡', 
+                '📜', '🦄', '🦄', '⭐', '🌙', '🧙‍♀️', '🧙‍♂️',
+                '🏰', '🚂', '🍺', '🐸', '🕯️', '🦄', '🗝️', '💎',
+                '🦄', '🦄', '🦄', '🦄', '✨', '💫', '🌟'
+            ];
+            
+            const floatingContainer = document.getElementById('floatingEmojis');
+            
+            if (floatingContainer) {
+                floatingContainer.innerHTML = '';
+            }
+            
+            function createSingleEmoji() {
+                if (!document.getElementById('floatingEmojis')) return;
+                
+                const emoji = document.createElement('div');
+                emoji.className = 'floating-emoji';
+                emoji.textContent = harryPotterEmojis[Math.floor(Math.random() * harryPotterEmojis.length)];
+                
+                emoji.style.left = Math.random() * 90 + 5 + '%';
+                
+                const duration = 15 + Math.random() * 10;
+                emoji.style.animationDuration = duration + 's';
+                emoji.style.animationDelay = Math.random() * 5 + 's';
+                
+                floatingContainer.appendChild(emoji);
+                
+                setTimeout(() => {
+                    if (emoji && emoji.parentNode === floatingContainer) {
+                        emoji.remove();
+                    }
+                }, (duration + 5) * 1000);
+            }
+            
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => createSingleEmoji(), i * 2000);
+            }
+            
+            const emojiInterval = setInterval(() => {
+                if (document.getElementById('floatingEmojis')) {
+                    createSingleEmoji();
+                } else {
+                    clearInterval(emojiInterval);
+                }
+            }, 4000);
+        }
+
+        // ACHIEVEMENT SYSTEM
         function showAchievement(message) {
             const achievement = document.createElement('div');
             achievement.className = 'achievement';
@@ -2010,24 +1836,402 @@
             }, 4000);
         }
 
-        // Network status monitoring
+        // INITIALIZATION OF STORAGE AND SERVICE WORKER
+        async function initializeStorage() {
+            try {
+                if ('storage' in navigator && 'persist' in navigator.storage) {
+                    const persistent = await navigator.storage.persist();
+                    console.log(`🗄️ Persistent storage: ${persistent ? 'granted' : 'denied'}`);
+                    
+                    if (persistent) {
+                        showAchievement('📱 Persistent storage enabled - photos will be saved permanently! ✨');
+                    }
+                }
+
+                await initializeIndexedDB();
+            } catch (error) {
+                console.log('🗄️ Storage initialization failed, using localStorage fallback:', error);
+            }
+        }
+
+        // IndexedDB setup for robust photo storage
+        let photoDB = null;
+        
+        async function initializeIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('MagicalAdventureDB', 2);
+                
+                request.onerror = () => {
+                    console.log('📸 IndexedDB failed to open, using localStorage fallback');
+                    resolve(null);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    
+                    if (!db.objectStoreNames.contains('photos')) {
+                        const photoStore = db.createObjectStore('photos', { keyPath: 'id' });
+                        photoStore.createIndex('timestamp', 'timestamp', { unique: false });
+                    }
+                    
+                    if (!db.objectStoreNames.contains('captions')) {
+                        const captionStore = db.createObjectStore('captions', { keyPath: 'id' });
+                    }
+                };
+                
+                request.onsuccess = (event) => {
+                    photoDB = event.target.result;
+                    console.log('📸 IndexedDB initialized successfully');
+                    resolve(photoDB);
+                };
+            });
+        }
+
+        // Initialize Service Worker with enhanced features
+        async function initializeServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    console.log('🪄 Registering enhanced Service Worker...');
+                    serviceWorkerRegistration = await navigator.serviceWorker.register('./sw.js', {
+                        updateViaCache: 'none'
+                    });
+                    
+                    console.log('🪄 Service Worker registered successfully:', serviceWorkerRegistration);
+                    
+                    // Listen for messages from service worker
+                    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+                    
+                    // Register for background sync
+                    if ('sync' in serviceWorkerRegistration) {
+                        console.log('🪄 Background sync supported');
+                    }
+                    
+                    // Request notification permission
+                    await requestNotificationPermission();
+                    
+                    // Check for service worker updates
+                    serviceWorkerRegistration.addEventListener('updatefound', () => {
+                        console.log('🪄 Service Worker update found');
+                        const newWorker = serviceWorkerRegistration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showAchievement('✨ App updated! Refresh for new features! ✨');
+                            }
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.log('🪄 Service Worker registration failed:', error);
+                }
+            } else {
+                console.log('🪄 Service Worker not supported');
+            }
+        }
+
+        // Request notification permission
+        async function requestNotificationPermission() {
+            if ('Notification' in window) {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('🪄 Notification permission granted');
+                    showAchievement('🔔 Notifications enabled! You\'ll receive magical updates ✨');
+                    
+                    // Send message to service worker
+                    sendMessageToServiceWorker({
+                        type: 'REQUEST_NOTIFICATION_PERMISSION'
+                    });
+                } else {
+                    console.log('🪄 Notification permission denied');
+                }
+            }
+        }
+
+        // Handle messages from service worker
+        function handleServiceWorkerMessage(event) {
+            const { type, data } = event.data;
+            
+            switch (type) {
+                case 'PHOTO_SYNC_SUCCESS':
+                    showAchievement('📸 Photo synced successfully! ✨');
+                    break;
+                case 'ACTION_SYNC_SUCCESS':
+                    showAchievement('⚡ Progress synced! ✨');
+                    break;
+                case 'MAGICAL_DATA_SYNC_SUCCESS':
+                    showAchievement('🪄 Magical data synced! ✨');
+                    break;
+                default:
+                    console.log('🪄 Unknown message from service worker:', event.data);
+            }
+        }
+
+        // Register background sync for offline actions
+        async function registerBackgroundSync(tag) {
+            if (serviceWorkerRegistration && 'sync' in serviceWorkerRegistration) {
+                try {
+                    await serviceWorkerRegistration.sync.register(tag);
+                    console.log(`🪄 Background sync registered: ${tag}`);
+                } catch (error) {
+                    console.log('🪄 Background sync registration failed:', error);
+                }
+            }
+        }
+
+        // Send message to service worker
+        function sendMessageToServiceWorker(message) {
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage(message);
+            }
+        }
+
+        // Enhanced network monitoring with better feedback
         function initializeNetworkMonitoring() {
+            // Update UI based on initial connection state
+            updateConnectionStatus(navigator.onLine);
+            
             window.addEventListener('online', () => {
-                showAchievement('🌐 Connection restored! Syncing data... ✨');
+                updateConnectionStatus(true);
+                showAchievement('🌐 Connection restored! Syncing magical data... ✨');
+                
+                // Trigger all sync operations
                 registerBackgroundSync('photo-upload-sync');
                 registerBackgroundSync('user-actions-sync');
                 registerBackgroundSync('magical-data-sync');
+                registerBackgroundSync('content-update-sync');
             });
             
             window.addEventListener('offline', () => {
-                showAchievement('📱 Offline mode - your progress is safely saved! ✨');
+                updateConnectionStatus(false);
+                showAchievement('📱 Offline mode activated - your magic is safely saved! ✨');
             });
         }
+
+        // Update connection status in UI
+        function updateConnectionStatus(isOnline) {
+            console.log(`🌐 Connection status: ${isOnline ? 'Online' : 'Offline'}`);
+        }
+
+        // Enhanced photo upload with better offline support
+        function uploadPhoto(input, photoId) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const photoContainer = document.getElementById(photoId);
+                    photoContainer.innerHTML = '';
+                    
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'uploaded-image';
+                    img.alt = 'Magical Memory';
+                    
+                    photoContainer.appendChild(img);
+                    
+                    await savePhotoData(photoId, e.target.result);
+                    
+                    // Add to pending uploads for background sync
+                    await addToPendingUploads(photoId, e.target.result);
+                    
+                    // Register background sync for photos
+                    await registerBackgroundSync('photo-upload-sync');
+                    
+                    showAchievement("📸 Magical Memory Captured! ✨");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Add photo to pending uploads queue
+        async function addToPendingUploads(photoId, photoData) {
+            try {
+                const pendingUploads = JSON.parse(localStorage.getItem('pending_uploads') || '[]');
+                pendingUploads.push({
+                    id: photoId,
+                    data: photoData,
+                    timestamp: Date.now()
+                });
+                localStorage.setItem('pending_uploads', JSON.stringify(pendingUploads));
+                console.log(`📸 Added ${photoId} to pending uploads queue`);
+            } catch (error) {
+                console.log('📸 Could not add to pending uploads:', error);
+            }
+        }
+
+        // Save photo data with IndexedDB and localStorage fallback
+        async function savePhotoData(photoId, photoData) {
+            const photoRecord = {
+                id: photoId,
+                data: photoData,
+                timestamp: Date.now()
+            };
+
+            if (photoDB) {
+                try {
+                    const transaction = photoDB.transaction(['photos'], 'readwrite');
+                    const store = transaction.objectStore('photos');
+                    await new Promise((resolve, reject) => {
+                        const request = store.put(photoRecord);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                    console.log(`📸 Photo saved to IndexedDB for ${photoId}`);
+                    return;
+                } catch (error) {
+                    console.log('📸 IndexedDB save failed, trying localStorage:', error);
+                }
+            }
+
+            try {
+                localStorage.setItem(`magical_photo_${photoId}`, photoData);
+                console.log(`📸 Photo saved to localStorage for ${photoId}`);
+            } catch (error) {
+                console.log('📸 Photo saved in memory only (storage not available or full):', error);
+                showAchievement("⚠️ Storage full - photos may not persist after closing app");
+            }
+        }
+        
+        // Load saved photos from IndexedDB or localStorage
+        async function loadSavedPhotos() {
+            console.log('📸 Loading saved photos...');
+            
+            for (let i = 1; i <= 20; i++) {
+                const photoId = `photo${i}`;
+                await loadSinglePhoto(photoId);
+                await loadSingleCaption(photoId);
+            }
+            
+            console.log('📸 Finished loading saved photos');
+        }
+        
+        // Load a single photo from storage
+        async function loadSinglePhoto(photoId) {
+            let savedPhoto = null;
+
+            const photoContainer = document.getElementById(photoId);
+            if (!photoContainer) {
+                console.log(`📸 Photo container ${photoId} not found in DOM - skipping`);
+                return;
+            }
+
+            if (photoDB) {
+                try {
+                    const transaction = photoDB.transaction(['photos'], 'readonly');
+                    const store = transaction.objectStore('photos');
+                    savedPhoto = await new Promise((resolve, reject) => {
+                        const request = store.get(photoId);
+                        request.onsuccess = () => resolve(request.result?.data || null);
+                        request.onerror = () => reject(request.error);
+                    });
+                } catch (error) {
+                    console.log(`📸 IndexedDB load failed for ${photoId}, trying localStorage:`, error);
+                }
+            }
+
+            if (!savedPhoto) {
+                try {
+                    savedPhoto = localStorage.getItem(`magical_photo_${photoId}`);
+                } catch (error) {
+                    console.log(`📸 Could not load photo for ${photoId}:`, error);
+                    return;
+                }
+            }
+
+            if (savedPhoto) {
+                photoContainer.innerHTML = '';
+                
+                const img = document.createElement('img');
+                img.src = savedPhoto;
+                img.className = 'uploaded-image';
+                img.alt = 'Magical Memory';
+                
+                photoContainer.appendChild(img);
+                console.log(`📸 Photo restored for ${photoId}`);
+            }
+        }
+
+        // Load a single caption from storage
+        async function loadSingleCaption(photoId) {
+            let savedCaption = null;
+
+            if (photoDB) {
+                try {
+                    const transaction = photoDB.transaction(['captions'], 'readonly');
+                    const store = transaction.objectStore('captions');
+                    const captionRecord = await new Promise((resolve, reject) => {
+                        const request = store.get(photoId);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                    savedCaption = captionRecord?.caption;
+                } catch (error) {
+                    console.log(`💬 IndexedDB caption load failed for ${photoId}, trying localStorage:`, error);
+                }
+            }
+
+            if (!savedCaption) {
+                try {
+                    savedCaption = localStorage.getItem(`magical_caption_${photoId}`);
+                } catch (error) {
+                    console.log(`💬 Could not load caption for ${photoId}:`, error);
+                    return;
+                }
+            }
+
+            if (savedCaption) {
+                const photoElement = document.getElementById(photoId);
+                if (photoElement && photoElement.parentElement) {
+                    const captionInput = photoElement.parentElement.querySelector('.polaroid-caption');
+                    if (captionInput) {
+                        captionInput.value = savedCaption;
+                    }
+                }
+            }
+        }
+        
+        // Save polaroid caption with robust persistence
+        async function savePolaroidCaption(input, photoId) {
+            const captionRecord = {
+                id: photoId,
+                caption: input.value,
+                timestamp: Date.now()
+            };
+
+            if (photoDB) {
+                try {
+                    const transaction = photoDB.transaction(['captions'], 'readwrite');
+                    const store = transaction.objectStore('captions');
+                    await new Promise((resolve, reject) => {
+                        const request = store.put(captionRecord);
+                        request.onsuccess = () => resolve(request.result);
+                        request.onerror = () => reject(request.error);
+                    });
+                    console.log(`💬 Caption saved to IndexedDB for ${photoId}: "${input.value}"`);
+                    return;
+                } catch (error) {
+                    console.log('💬 IndexedDB caption save failed, trying localStorage:', error);
+                }
+            }
+
+            try {
+                localStorage.setItem(`magical_caption_${photoId}`, input.value);
+                console.log(`💬 Caption saved to localStorage for ${photoId}: "${input.value}"`);
+            } catch (error) {
+                console.log('💬 Caption save failed:', error);
+            }
+        }
+
+        // Manual photo reload function for testing
+        async function reloadAllPhotos() {
+            console.log('🔄 Manually reloading all photos...');
+            await loadSavedPhotos();
+            showAchievement('🔄 Photos reloaded from storage! ✨');
+        }
+
+        // ...existing code for all other functions (createStars, sorting, wand selection, etc.)
 
         // Initialize on load with network monitoring
         window.addEventListener('load', () => {
             initializeMagic();
-            initializeNetworkMonitoring();
         });
     </script>
 </body>
