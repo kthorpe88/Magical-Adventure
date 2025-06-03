@@ -1935,17 +1935,19 @@
                 }, (duration + 5) * 1000);
             }
             
-            for (let i = 0; i < 6; i++) {
+            // Reduced from 6 to 3 initial emojis
+            for (let i = 0; i < 4; i++) {
                 setTimeout(() => createSingleEmoji(), i * 2000);
             }
             
+            // Increased interval from 4000ms to 8000ms to spawn fewer emojis
             const emojiInterval = setInterval(() => {
                 if (document.getElementById('floatingEmojis')) {
                     createSingleEmoji();
                 } else {
                     clearInterval(emojiInterval);
                 }
-            }, 4000);
+            }, 8000);
         }
 
         // ACHIEVEMENT SYSTEM
