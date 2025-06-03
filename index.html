@@ -1355,6 +1355,9 @@
         let musicPlaying = false;
         let backgroundMusic = null;
         
+        // Service Worker state
+        let serviceWorkerRegistration = null;
+        
         const houses = [
             { name: 'GRYFFINDOR', emoji: '🦁', class: 'gryffindor' },
             { name: 'HUFFLEPUFF', emoji: '🦡', class: 'hufflepuff' },
@@ -1386,7 +1389,7 @@
                 options: [
                     { text: "Mind reading and telepathy", house: "ravenclaw" },
                     { text: "Speaking to animals", house: "hufflepuff" },
-                                       { text: "Controlling the elements", house: "gryffindor" },
+                    { text: "Controlling the elements", house: "gryffindor" },
                     { text: "Seeing into the future", house: "slytherin" }
                 ]
             }
@@ -1402,65 +1405,89 @@
         ];
         
         // INITIALIZATION
-        function initializeMagic() {
+        async function initializeMagic() {
             createStars();
             createFloatingEmojis();
-            initializeStorage();
+            await initializeStorage();
+            await initializeServiceWorker();
             initializeMusic();
             showScreen('sortingScreen');
         }
 
-        // Initialize persistent storage
-        async function initializeStorage() {
-            try {
-                if ('storage' in navigator && 'persist' in navigator.storage) {
-                    const persistent = await navigator.storage.persist();
-                    console.log(`🗄️ Persistent storage: ${persistent ? 'granted' : 'denied'}`);
+        // Initialize Service Worker
+        async function initializeServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    console.log('🪄 Registering Service Worker...');
+                    serviceWorkerRegistration = await navigator.serviceWorker.register('./sw.js');
                     
-                    if (persistent) {
-                        showAchievement('📱 Persistent storage enabled - photos will be saved permanently! ✨');
+                    console.log('🪄 Service Worker registered successfully:', serviceWorkerRegistration);
+                    
+                    // Listen for messages from service worker
+                    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+                    
+                    // Register for background sync
+                    if ('sync' in serviceWorkerRegistration) {
+                        console.log('🪄 Background sync supported');
                     }
+                    
+                    // Check for service worker updates
+                    serviceWorkerRegistration.addEventListener('updatefound', () => {
+                        console.log('🪄 Service Worker update found');
+                        const newWorker = serviceWorkerRegistration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showAchievement('✨ App updated! Refresh for new features! ✨');
+                            }
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.log('🪄 Service Worker registration failed:', error);
                 }
-
-                await initializeIndexedDB();
-            } catch (error) {
-                console.log('🗄️ Storage initialization failed, using localStorage fallback:', error);
+            } else {
+                console.log('🪄 Service Worker not supported');
             }
         }
 
-        // IndexedDB setup for robust photo storage
-        let photoDB = null;
-        
-        async function initializeIndexedDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open('MagicalAdventureDB', 2);
-                
-                request.onerror = () => {
-                    console.log('📸 IndexedDB failed to open, using localStorage fallback');
-                    resolve(null);
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    
-                    if (!db.objectStoreNames.contains('photos')) {
-                        const photoStore = db.createObjectStore('photos', { keyPath: 'id' });
-                        photoStore.createIndex('timestamp', 'timestamp', { unique: false });
-                    }
-                    
-                    if (!db.objectStoreNames.contains('captions')) {
-                        const captionStore = db.createObjectStore('captions', { keyPath: 'id' });
-                    }
-                };
-                
-                request.onsuccess = (event) => {
-                    photoDB = event.target.result;
-                    console.log('📸 IndexedDB initialized successfully');
-                    resolve(photoDB);
-                };
-            });
+        // Handle messages from service worker
+        function handleServiceWorkerMessage(event) {
+            const { type, data } = event.data;
+            
+            switch (type) {
+                case 'PHOTO_SYNC_SUCCESS':
+                    showAchievement('📸 Photo synced successfully! ✨');
+                    break;
+                case 'ACTION_SYNC_SUCCESS':
+                    showAchievement('⚡ Progress synced! ✨');
+                    break;
+                case 'MAGICAL_DATA_SYNC_SUCCESS':
+                    showAchievement('🪄 Magical data synced! ✨');
+                    break;
+                default:
+                    console.log('🪄 Unknown message from service worker:', event.data);
+            }
         }
-        
+
+        // Register background sync for offline actions
+        async function registerBackgroundSync(tag) {
+            if (serviceWorkerRegistration && 'sync' in serviceWorkerRegistration) {
+                try {
+                    await serviceWorkerRegistration.sync.register(tag);
+                    console.log(`🪄 Background sync registered: ${tag}`);
+                } catch (error) {
+                    console.log('🪄 Background sync registration failed:', error);
+                }
+            }
+        }
+
+        // Send message to service worker
+        function sendMessageToServiceWorker(message) {
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage(message);
+            }
+        }
+
         // SCREEN MANAGEMENT
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
@@ -1658,7 +1685,278 @@
             document.getElementById('patronusResult').style.display = 'block';
         }
         
-        // Enhanced wand selection with sync support
+        // Service Worker registration and communication
+        async function initializeServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                try {
+                    console.log('🪄 Registering Service Worker...');
+                    serviceWorkerRegistration = await navigator.serviceWorker.register('./sw.js');
+                    
+                    console.log('🪄 Service Worker registered successfully:', serviceWorkerRegistration);
+                    
+                    // Listen for messages from service worker
+                    navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
+                    
+                    // Register for background sync
+                    if ('sync' in serviceWorkerRegistration) {
+                        console.log('🪄 Background sync supported');
+                    }
+                    
+                    // Check for service worker updates
+                    serviceWorkerRegistration.addEventListener('updatefound', () => {
+                        console.log('🪄 Service Worker update found');
+                        const newWorker = serviceWorkerRegistration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showAchievement('✨ App updated! Refresh for new features! ✨');
+                            }
+                        });
+                    });
+                    
+                } catch (error) {
+                    console.log('🪄 Service Worker registration failed:', error);
+                }
+            } else {
+                console.log('🪄 Service Worker not supported');
+            }
+        }
+
+        // Handle messages from service worker
+        function handleServiceWorkerMessage(event) {
+            const { type, data } = event.data;
+            
+            switch (type) {
+                case 'PHOTO_SYNC_SUCCESS':
+                    showAchievement('📸 Photo synced successfully! ✨');
+                    break;
+                case 'ACTION_SYNC_SUCCESS':
+                    showAchievement('⚡ Progress synced! ✨');
+                    break;
+                case 'MAGICAL_DATA_SYNC_SUCCESS':
+                    showAchievement('🪄 Magical data synced! ✨');
+                    break;
+                default:
+                    console.log('🪄 Unknown message from service worker:', event.data);
+            }
+        }
+
+        // Register background sync for offline actions
+        async function registerBackgroundSync(tag) {
+            if (serviceWorkerRegistration && 'sync' in serviceWorkerRegistration) {
+                try {
+                    await serviceWorkerRegistration.sync.register(tag);
+                    console.log(`🪄 Background sync registered: ${tag}`);
+                } catch (error) {
+                    console.log('🪄 Background sync registration failed:', error);
+                }
+            }
+        }
+
+        // Send message to service worker
+        function sendMessageToServiceWorker(message) {
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage(message);
+            }
+        }
+
+        // SCREEN MANAGEMENT
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        // SECTION REVEAL SYSTEM
+        function revealSection(sectionId) {
+            const content = document.getElementById(sectionId);
+            if (content) {
+                content.classList.add('revealed');
+                showAchievement(`✨ ${sectionId} revealed! ✨`);
+            }
+        }
+        
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 3 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                star.style.animationDuration = Math.random() * 3 + 1 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        function createFloatingEmojis() {
+            const harryPotterEmojis = [
+                '🦄', '🪄', '🦉', '⚡', '🐍', '🦅', '🦁', '🦡', 
+                '📜', '🦄', '🦄', '⭐', '🌙', '🧙‍♀️', '🧙‍♂️',
+                '🏰', '🚂', '🍺', '🐸', '🕯️', '🦄', '🗝️', '💎',
+                '🦄', '🦄', '🦄', '🦄', '✨', '💫', '🌟'
+            ];
+            
+            const floatingContainer = document.getElementById('floatingEmojis');
+            
+            // Clear container completely
+            if (floatingContainer) {
+                floatingContainer.innerHTML = '';
+            }
+            
+            function createSingleEmoji() {
+                if (!document.getElementById('floatingEmojis')) return;
+                
+                const emoji = document.createElement('div');
+                emoji.className = 'floating-emoji';
+                emoji.textContent = harryPotterEmojis[Math.floor(Math.random() * harryPotterEmojis.length)];
+                
+                // Position horizontally only
+                emoji.style.left = Math.random() * 90 + 5 + '%'; // 5% to 95% to avoid edges
+                
+                // Set slower animation duration
+                const duration = 15 + Math.random() * 10; // 15-25 seconds (much slower)
+                emoji.style.animationDuration = duration + 's';
+                emoji.style.animationDelay = Math.random() * 5 + 's'; // Longer delays
+                
+                floatingContainer.appendChild(emoji);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    if (emoji && emoji.parentNode === floatingContainer) {
+                        floatingContainer.removeChild(emoji);
+                    }
+                }, (duration + 5) * 1000); // Longer cleanup time
+            }
+            
+            // Create initial batch with longer delays
+            for (let i = 0; i < 6; i++) { // Fewer emojis
+                setTimeout(() => createSingleEmoji(), i * 2000); // 2 second intervals
+            }
+            
+            // Continue creating with longer intervals
+            const emojiInterval = setInterval(() => {
+                if (document.getElementById('floatingEmojis')) {
+                    createSingleEmoji();
+                } else {
+                    clearInterval(emojiInterval);
+                }
+            }, 4000); // Every 4 seconds instead of 2.5
+        }
+        
+        // Sorting functions
+        function startSorting() {
+            startMagicalMusic();
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            if (currentQuestionIndex >= sortingQuestions.length) {
+                finishSorting();
+                return;
+            }
+            
+            const question = sortingQuestions[currentQuestionIndex];
+            document.getElementById('quizQuestion').style.display = 'block';
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('questionOptions');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'quiz-option';
+                button.textContent = option.text;
+                button.onclick = () => answerQuestion(option.house);
+                optionsContainer.appendChild(button);
+            });
+        }
+        
+        function answerQuestion(house) {
+            houseScores[house]++;
+            currentQuestionIndex++;
+            showQuestion();
+        }
+        
+        function finishSorting() {
+            let maxScore = 0;
+            let selectedHouse = 'gryffindor';
+            
+            for (let house in houseScores) {
+                if (houseScores[house] > maxScore) {
+                    maxScore = houseScores[house];
+                    selectedHouse = house;
+                }
+            }
+            
+            const houseData = houses.find(h => h.class === selectedHouse);
+            
+            document.getElementById('quizQuestion').innerHTML = `
+                <h2 style="color: #8b4513; margin-bottom: 1rem;">🎩 The Sorting Hat Has Spoken! 🎩</h2>
+                <div style="font-size: 3rem; margin: 2rem 0;">${houseData.emoji}</div>
+                <h3 style="color: #8b0000; margin-bottom: 1rem;">${houseData.name}!</h3>
+                <p style="font-style: italic; margin-bottom: 2rem;">"Welcome to your house, Stephanie! Kyle's magical journey begins now..."</p>
+                <button class="quiz-option" onclick="continueToTitle()">Continue to Your Birthday Surprise!</button>
+            `;
+        }
+        
+        function continueToTitle() {
+            showScreen('titleScreen');
+        }
+        
+        function startJourney() {
+            showScreen('contentScreen');
+            setTimeout(() => loadSavedPhotos(), 100);
+            showAchievement("🎂 Your magical birthday adventure begins! ✨");
+        }
+        
+        function goHome() {
+            currentQuestionIndex = 0;
+            houseScores = { gryffindor: 0, hufflepuff: 0, ravenclaw: 0, slytherin: 0 };
+            selectedWand = null;
+            
+            document.getElementById('quizQuestion').style.display = 'none';
+            document.getElementById('quizQuestion').innerHTML = `
+                <h3 id="questionText"></h3>
+                <div id="questionOptions"></div>
+            `;
+            
+            document.getElementById('patronusResult').style.display = 'none';
+            
+            document.querySelectorAll('.wand').forEach(w => w.classList.remove('selected'));
+            document.getElementById('wandMessage').textContent = '';
+            
+            document.querySelectorAll('.section-content').forEach(content => {
+                content.classList.remove('revealed');
+            });
+            
+            document.querySelectorAll('.shopping-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            document.getElementById('optionA').checked = false;
+            document.getElementById('optionB').checked = false;
+            document.getElementById('optionAText').classList.remove('crossed-out');
+            document.getElementById('optionBText').classList.remove('crossed-out');
+            
+            closeOptionPopup();
+            
+            showScreen('sortingScreen');
+        }
+        
+        // Patronus
+        function generatePatronus() {
+            const randomPatronus = patronusAnimals[Math.floor(Math.random() * patronusAnimals.length)];
+            document.getElementById('patronusAnimal').textContent = randomPatronus.animal;
+            document.getElementById('patronusMessage').textContent = 
+                `Your Patronus is a ${randomPatronus.name}! This represents ${randomPatronus.meaning}.`;
+            document.getElementById('patronusResult').style.display = 'block';
+        }
+        
+        // Enhanced wand selection with service worker sync
         function selectWand(wandElement, wandType) {
             document.querySelectorAll('.wand').forEach(w => w.classList.remove('selected'));
             wandElement.classList.add('selected');
@@ -1675,368 +1973,62 @@
             
             try {
                 localStorage.setItem('selected_wand', wandType);
+                
+                // Register background sync for user actions
+                registerBackgroundSync('user-actions-sync');
+                
             } catch (error) {
                 console.log('🪄 Wand selection saved in memory only');
             }
         }
-        
-        // Spell casting
-        function castMagicalSpell(event, spellSymbol, incantationText) {
-            showAchievement(`${incantationText} spell cast! ✨`);
-            
-            const spell = document.createElement('div');
-            spell.style.position = 'fixed';
-            spell.style.left = event.clientX + 'px';
-            spell.style.top = event.clientY + 'px';
-            spell.style.fontSize = '2rem';
-            spell.style.color = '#d4af37';
-            spell.style.pointerEvents = 'none';
-            spell.style.zIndex = '9999';
-            spell.innerHTML = spellSymbol;
-            spell.style.animation = 'fadeIn 1s ease-out forwards';
-            
-            document.body.appendChild(spell);
-            setTimeout(() => spell.remove(), 1000);
-        }
-        
-        // Love spell casting
-        function castLoveSpell(event, spellSymbol, incantationText) {
-            const loveMessages = {
-                'Amortentia': 'Love Potion brewed with Kyle\'s eternal love! 💕',
-                'Protean Charm': 'Infinite bond spell cast - connected forever! ♾️',
-                'Pensieve Memory': 'Beautiful memory saved in our magical pensieve! 🌀',
-                'Lumos Solem': 'Eternal light spell - you brighten Kyle\'s world! 🌟'
-            };
-            
-            showAchievement(loveMessages[incantationText] || `${incantationText} love spell cast! 💖`);
-            
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    const spell = document.createElement('div');
-                    spell.style.position = 'fixed';
-                    spell.style.left = (event.clientX + (Math.random() - 0.5) * 100) + 'px';
-                    spell.style.top = (event.clientY + (Math.random() - 0.5) * 100) + 'px';
-                    spell.style.fontSize = '1.5rem';
-                    spell.style.color = spellSymbol === '💝' ? '#ff69b4' : 
-                                       spellSymbol === '♾️' ? '#9370db' :
-                                       spellSymbol === '📸' ? '#4682b4' : '#ffd700';
-                    spell.style.pointerEvents = 'none';
-                    spell.style.zIndex = '9999';
-                    spell.innerHTML = spellSymbol;
-                    spell.style.animation = 'float 2s ease-out forwards';
-                    spell.style.textShadow = '0 0 10px currentColor';
-                    
-                    document.body.appendChild(spell);
-                    setTimeout(() => spell.remove(), 2000);
-                }, i * 200);
-            }
-        }
-        
-        // Enhanced photo upload with persistent storage
-        function uploadPhoto(input, photoId) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    const photoContainer = document.getElementById(photoId);
-                    photoContainer.innerHTML = '';
-                    
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.className = 'uploaded-image';
-                    img.alt = 'Magical Memory';
-                    
-                    photoContainer.appendChild(img);
-                    
-                    await savePhotoData(photoId, e.target.result);
-                    
-                    showAchievement("📸 Magical Memory Captured! ✨");
-                };
-                reader.readAsDataURL(file);
-            }
-        }
 
-        // Save photo data with IndexedDB and localStorage fallback
-        async function savePhotoData(photoId, photoData) {
-            const photoRecord = {
-                id: photoId,
-                data: photoData,
-                timestamp: Date.now()
-            };
-
-            if (photoDB) {
-                try {
-                    const transaction = photoDB.transaction(['photos'], 'readwrite');
-                    const store = transaction.objectStore('photos');
-                    await new Promise((resolve, reject) => {
-                        const request = store.put(photoRecord);
-                        request.onsuccess = () => resolve(request.result);
-                        request.onerror = () => reject(request.error);
-                    });
-                    console.log(`📸 Photo saved to IndexedDB for ${photoId}`);
-                    return;
-                } catch (error) {
-                    console.log('📸 IndexedDB save failed, trying localStorage:', error);
-                }
-            }
-
-            try {
-                localStorage.setItem(`magical_photo_${photoId}`, photoData);
-                console.log(`📸 Photo saved to localStorage for ${photoId}`);
-            } catch (error) {
-                console.log('📸 Photo saved in memory only (storage not available or full):', error);
-                showAchievement("⚠️ Storage full - photos may not persist after closing app");
-            }
-        }
-        
-        // Load saved photos from IndexedDB or localStorage
-        async function loadSavedPhotos() {
-            console.log('📸 Loading saved photos...');
-            
-            for (let i = 1; i <= 20; i++) {
-                const photoId = `photo${i}`;
-                await loadSinglePhoto(photoId);
-                await loadSingleCaption(photoId);
-            }
-            
-            console.log('📸 Finished loading saved photos');
-        }
-        
-        // Load a single photo from storage
-        async function loadSinglePhoto(photoId) {
-            let savedPhoto = null;
-
-            const photoContainer = document.getElementById(photoId);
-            if (!photoContainer) {
-                console.log(`📸 Photo container ${photoId} not found in DOM - skipping`);
-                return;
-            }
-
-            if (photoDB) {
-                try {
-                    const transaction = photoDB.transaction(['photos'], 'readonly');
-                    const store = transaction.objectStore('photos');
-                    savedPhoto = await new Promise((resolve, reject) => {
-                        const request = store.get(photoId);
-                        request.onsuccess = () => resolve(request.result?.data || null);
-                        request.onerror = () => reject(request.error);
-                    });
-                } catch (error) {
-                    console.log(`📸 IndexedDB load failed for ${photoId}, trying localStorage:`, error);
-                }
-            }
-
-            if (!savedPhoto) {
-                try {
-                    savedPhoto = localStorage.getItem(`magical_photo_${photoId}`);
-                } catch (error) {
-                    console.log(`📸 Could not load photo for ${photoId}:`, error);
-                    return;
-                }
-            }
-
-            if (savedPhoto) {
-                photoContainer.innerHTML = '';
-                
-                const img = document.createElement('img');
-                img.src = savedPhoto;
-                img.className = 'uploaded-image';
-                img.alt = 'Magical Memory';
-                
-                photoContainer.appendChild(img);
-                console.log(`📸 Photo restored for ${photoId}`);
-            }
-        }
-
-        // Load a single caption from storage
-        async function loadSingleCaption(photoId) {
-            let savedCaption = null;
-
-            if (photoDB) {
-                try {
-                    const transaction = photoDB.transaction(['captions'], 'readonly');
-                    const store = transaction.objectStore('captions');
-                    const captionRecord = await new Promise((resolve, reject) => {
-                        const request = store.get(photoId);
-                        request.onsuccess = () => resolve(request.result);
-                        request.onerror = () => reject(request.error);
-                    });
-                    savedCaption = captionRecord?.caption;
-                } catch (error) {
-                    console.log(`💬 IndexedDB caption load failed for ${photoId}, trying localStorage:`, error);
-                }
-            }
-
-            if (!savedCaption) {
-                try {
-                    savedCaption = localStorage.getItem(`magical_caption_${photoId}`);
-                } catch (error) {
-                    console.log(`💬 Could not load caption for ${photoId}:`, error);
-                    return;
-                }
-            }
-
-            if (savedCaption) {
-                const photoElement = document.getElementById(photoId);
-                if (photoElement && photoElement.parentElement) {
-                    const captionInput = photoElement.parentElement.querySelector('.polaroid-caption');
-                    if (captionInput) {
-                        captionInput.value = savedCaption;
-                    }
-                }
-            }
-        }
-        
-        // Save polaroid caption with robust persistence
-        async function savePolaroidCaption(input, photoId) {
-            const captionRecord = {
-                id: photoId,
-                caption: input.value,
-                timestamp: Date.now()
-            };
-
-            if (photoDB) {
-                try {
-                    const transaction = photoDB.transaction(['captions'], 'readwrite');
-                    const store = transaction.objectStore('captions');
-                    await new Promise((resolve, reject) => {
-                        const request = store.put(captionRecord);
-                        request.onsuccess = () => resolve(request.result);
-                        request.onerror = () => reject(request.error);
-                    });
-                    console.log(`💬 Caption saved to IndexedDB for ${photoId}: "${input.value}"`);
-                    return;
-                } catch (error) {
-                    console.log('💬 IndexedDB caption save failed, trying localStorage:', error);
-                }
-            }
-
-            try {
-                localStorage.setItem(`magical_caption_${photoId}`, input.value);
-                console.log(`💬 Caption saved to localStorage for ${photoId}: "${input.value}"`);
-            } catch (error) {
-                console.log('💬 Caption save failed:', error);
-            }
-        }
-        
-        // Option selection
-        function selectOption(option, checkbox) {
-            if (checkbox.checked) {
-                const otherOption = option === 'A' ? 'B' : 'A';
-                const otherCheckbox = document.getElementById(`option${otherOption}`);
-                const otherText = document.getElementById(`option${otherOption}Text`);
-                
-                if (otherCheckbox.checked) {
-                    otherCheckbox.checked = false;
-                    otherText.classList.remove('crossed-out');
-                }
-                
-                otherText.classList.add('crossed-out');
-                
-                showOptionPopup(option);
-                
-                const optionName = option === 'A' ? 'Universal Studios Return' : 'Orlando Exploration';
-                showAchievement(`🎯 ${optionName} chosen! Your final day adventure is set! ✨`);
-            } else {
-                const otherOption = option === 'A' ? 'B' : 'A';
-                const otherText = document.getElementById(`option${otherOption}Text`);
-                otherText.classList.remove('crossed-out');
-            }
-        }
-        
-        function showOptionPopup(option) {
-            const popupId = option === 'A' ? 'optionAPopup' : 'optionBPopup';
-            const popup = document.getElementById(popupId);
-            popup.classList.add('show');
-        }
-        
-        function closeOptionPopup() {
-            document.getElementById('optionAPopup').classList.remove('show');
-            document.getElementById('optionBPopup').classList.remove('show');
-        }
-        
+        // Enhanced achievement system with offline support
         function showAchievement(message) {
             const achievement = document.createElement('div');
             achievement.className = 'achievement';
             achievement.textContent = message;
             document.body.appendChild(achievement);
             
+            // Save achievement for sync
+            try {
+                const achievements = JSON.parse(localStorage.getItem('magical_achievements') || '[]');
+                achievements.push({
+                    message,
+                    timestamp: Date.now()
+                });
+                localStorage.setItem('magical_achievements', JSON.stringify(achievements));
+                
+                // Register background sync for magical data
+                registerBackgroundSync('magical-data-sync');
+                
+            } catch (error) {
+                console.log('🪄 Achievement saved in memory only');
+            }
+            
             setTimeout(() => {
                 achievement.remove();
             }, 4000);
         }
-        
-        // Music Control Functions
-        function initializeMusic() {
-            backgroundMusic = document.getElementById('backgroundMusic');
-            updateMusicButton();
-            
-            backgroundMusic.addEventListener('error', () => {
-                console.log('🎵 Background music file not found - continuing without music');
-                document.getElementById('musicBtn').style.display = 'none';
+
+        // Network status monitoring
+        function initializeNetworkMonitoring() {
+            window.addEventListener('online', () => {
+                showAchievement('🌐 Connection restored! Syncing data... ✨');
+                registerBackgroundSync('photo-upload-sync');
+                registerBackgroundSync('user-actions-sync');
+                registerBackgroundSync('magical-data-sync');
             });
             
-            backgroundMusic.addEventListener('canplaythrough', () => {
-                console.log('🎵 Background music loaded and ready!');
-            });
-            
-            backgroundMusic.addEventListener('play', () => {
-                musicPlaying = true;
-                updateMusicButton();
-                console.log('🎵 Music started playing');
-            });
-            
-            backgroundMusic.addEventListener('pause', () => {
-                musicPlaying = false;
-                updateMusicButton();
-                console.log('🎵 Music paused');
-            });
-            
-            backgroundMusic.addEventListener('ended', () => {
-                musicPlaying = false;
-                updateMusicButton();
-                console.log('🎵 Music ended');
+            window.addEventListener('offline', () => {
+                showAchievement('📱 Offline mode - your progress is safely saved! ✨');
             });
         }
-        
-        function startMagicalMusic() {
-            if (backgroundMusic && !musicPlaying) {
-                backgroundMusic.play().catch(error => {
-                    console.log('🎵 Music autoplay blocked - user can start manually');
-                });
-            }
-        }
-        
-        function toggleMusic() {
-            if (!backgroundMusic) return;
-            
-            if (musicPlaying) {
-                backgroundMusic.pause();
-            } else {
-                backgroundMusic.play().catch(error => {
-                    console.log('🎵 Could not play music:', error);
-                });
-            }
-        }
-        
-        function updateMusicButton() {
-            const musicBtn = document.getElementById('musicBtn');
-            if (musicBtn) {
-                musicBtn.textContent = musicPlaying ? '🔇' : '🎵';
-                musicBtn.title = musicPlaying ? 'Mute Background Music' : 'Play Background Music';
-            }
-        }
 
-        // Manual photo reload function for testing
-
-
-
-
-
-
-
-
-        window.addEventListener('load', initializeMagic);        // Initialize on load        }            showAchievement('🔄 Photos reloaded from storage! ✨');            await loadSavedPhotos();            console.log('🔄 Manually reloading all photos...');        async function reloadAllPhotos() {   
+        // Initialize on load with network monitoring
+        window.addEventListener('load', () => {
+            initializeMagic();
+            initializeNetworkMonitoring();
+        });
     </script>
 </body>
 </html>

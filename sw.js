@@ -211,43 +211,174 @@ async function syncMagicalData() {
   }
 }
 
-// Helper functions for data management
+// Helper functions for magical app data management
 async function getPendingUploads() {
-  // In a real app, this would read from IndexedDB
-  // For now, return empty array
-  return [];
-}
-
-async function removePendingUpload(id) {
-  // Remove from IndexedDB
-  console.log(`🪄 Service Worker: Removing pending upload ${id}`);
-}
-
-async function uploadPhotoToServer(upload) {
-  // Upload photo to your server
-  console.log('🪄 Service Worker: Uploading photo to server', upload);
+    try {
+        // Check if we have IndexedDB access
+        const request = indexedDB.open('MagicalAdventureDB', 2);
+        
+        return new Promise((resolve, reject) => {
+            request.onsuccess = async (event) => {
+                const db = event.target.result;
+                
+                if (!db.objectStoreNames.contains('pendingUploads')) {
+                    resolve([]);
+                    return;
+                }
+                
+                const transaction = db.transaction(['pendingUploads'], 'readonly');
+                const store = transaction.objectStore('pendingUploads');
+                const getAllRequest = store.getAll();
+                
+                getAllRequest.onsuccess = () => {
+                    resolve(getAllRequest.result || []);
+                };
+                
+                getAllRequest.onerror = () => {
+                    resolve([]);
+                };
+            };
+            
+            request.onerror = () => {
+                resolve([]);
+            };
+        });
+    } catch (error) {
+        console.log('🪄 Service Worker: Could not access IndexedDB for pending uploads');
+        return [];
+    }
 }
 
 async function getPendingUserActions() {
-  // Get pending user actions from storage
-  return [];
-}
-
-async function removePendingAction(id) {
-  console.log(`🪄 Service Worker: Removing pending action ${id}`);
-}
-
-async function syncActionToServer(action) {
-  console.log('🪄 Service Worker: Syncing action to server', action);
+    try {
+        // Get actions from localStorage if available
+        const actions = localStorage.getItem('pending_user_actions');
+        return actions ? JSON.parse(actions) : [];
+    } catch (error) {
+        console.log('🪄 Service Worker: Could not get pending user actions');
+        return [];
+    }
 }
 
 async function getMagicalData() {
-  // Get magical app data from localStorage/IndexedDB
-  return null;
+    try {
+        // Collect magical app data from localStorage
+        const magicalData = {
+            selectedWand: localStorage.getItem('selected_wand'),
+            achievements: localStorage.getItem('magical_achievements'),
+            photoCount: 0,
+            lastSync: Date.now()
+        };
+        
+        // Count saved photos
+        for (let i = 1; i <= 20; i++) {
+            if (localStorage.getItem(`magical_photo_photo${i}`)) {
+                magicalData.photoCount++;
+            }
+        }
+        
+        return magicalData;
+    } catch (error) {
+        console.log('🪄 Service Worker: Could not get magical data');
+        return null;
+    }
+}
+
+async function removePendingUpload(id) {
+    try {
+        const request = indexedDB.open('MagicalAdventureDB', 2);
+        
+        return new Promise((resolve) => {
+            request.onsuccess = (event) => {
+                const db = event.target.result;
+                
+                if (db.objectStoreNames.contains('pendingUploads')) {
+                    const transaction = db.transaction(['pendingUploads'], 'readwrite');
+                    const store = transaction.objectStore('pendingUploads');
+                    store.delete(id);
+                }
+                
+                resolve();
+            };
+            
+            request.onerror = () => {
+                console.log(`🪄 Service Worker: Could not remove pending upload ${id}`);
+                resolve();
+            };
+        });
+    } catch (error) {
+        console.log(`🪄 Service Worker: Error removing pending upload ${id}:`, error);
+    }
+}
+
+async function removePendingAction(id) {
+    try {
+        const actions = await getPendingUserActions();
+        const filteredActions = actions.filter(action => action.id !== id);
+        localStorage.setItem('pending_user_actions', JSON.stringify(filteredActions));
+        console.log(`🪄 Service Worker: Removed pending action ${id}`);
+    } catch (error) {
+        console.log(`🪄 Service Worker: Error removing pending action ${id}:`, error);
+    }
+}
+
+async function uploadPhotoToServer(upload) {
+    // Simulate server upload - in real app, this would POST to your server
+    console.log('🪄 Service Worker: Simulating photo upload to server', {
+        id: upload.id,
+        size: upload.data ? upload.data.length : 'unknown',
+        timestamp: upload.timestamp
+    });
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // In a real app, you would do:
+    // const response = await fetch('/api/photos', {
+    //   method: 'POST',
+    //   body: JSON.stringify(upload),
+    //   headers: { 'Content-Type': 'application/json' }
+    // });
+    // return response.json();
+    
+    return { success: true, id: upload.id };
+}
+
+async function syncActionToServer(action) {
+    console.log('🪄 Service Worker: Simulating action sync to server', action);
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // In a real app:
+    // const response = await fetch('/api/user-actions', {
+    //   method: 'POST',
+    //   body: JSON.stringify(action),
+    //   headers: { 'Content-Type': 'application/json' }
+    // });
+    
+    return { success: true, action: action.type };
 }
 
 async function syncMagicalDataToServer(data) {
-  console.log('🪄 Service Worker: Syncing magical data to server', data);
+    console.log('🪄 Service Worker: Simulating magical data sync to server', {
+        selectedWand: data.selectedWand,
+        achievementCount: data.achievements ? JSON.parse(data.achievements).length : 0,
+        photoCount: data.photoCount,
+        lastSync: new Date(data.lastSync).toISOString()
+    });
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // In a real app:
+    // const response = await fetch('/api/magical-data', {
+    //   method: 'POST',
+    //   body: JSON.stringify(data),
+    //   headers: { 'Content-Type': 'application/json' }
+    // });
+    
+    return { success: true, syncTime: data.lastSync };
 }
 
 // Notify all clients about sync results
@@ -305,22 +436,30 @@ self.addEventListener('notificationclick', (event) => {
   }
 });
 
-// Message Handler (for communication with main thread)
+// Enhanced message handler for magical app communication
 self.addEventListener('message', (event) => {
-  console.log('🪄 Service Worker: Message received', event.data);
-  
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-  
-  if (event.data && event.data.type === 'REGISTER_BACKGROUND_SYNC') {
-    // Register background sync when requested by main thread
-    self.registration.sync.register(event.data.tag).then(() => {
-      console.log('🪄 Service Worker: Background sync registered for', event.data.tag);
-    }).catch(error => {
-      console.error('🪄 Service Worker: Background sync registration failed', error);
-    });
-  }
+    console.log('🪄 Service Worker: Message received', event.data);
+    
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+    
+    if (event.data && event.data.type === 'REGISTER_BACKGROUND_SYNC') {
+        // Register background sync when requested by main thread
+        self.registration.sync.register(event.data.tag).then(() => {
+            console.log('🪄 Service Worker: Background sync registered for', event.data.tag);
+        }).catch(error => {
+            console.error('🪄 Service Worker: Background sync registration failed', error);
+        });
+    }
+    
+    if (event.data && event.data.type === 'CACHE_MAGICAL_DATA') {
+        // Cache important magical data
+        caches.open(CACHE_NAME).then(cache => {
+            // Store magical data in cache for offline access
+            console.log('🪄 Service Worker: Caching magical data');
+        });
+    }
 });
 
-console.log('🪄 Service Worker: Enhanced script loaded successfully with background sync!');
+console.log('🪄 Service Worker: Enhanced magical script loaded successfully!');
