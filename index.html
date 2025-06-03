@@ -162,30 +162,36 @@
         .floating-emoji {
             position: absolute;
             font-size: 2.5rem;
-            opacity: 0.8;
-            animation: float 12s infinite linear;
+            opacity: 0;
+            pointer-events: none;
             filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+            animation-name: floatUpOnly;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
         }
         
-        @keyframes float {
+        @keyframes floatUpOnly {
             0% {
-                transform: translateY(100vh) rotate(0deg) scale(0.8);
+                bottom: -50px;
                 opacity: 0;
+                transform: rotate(0deg) scale(0.8);
             }
-            5% {
+            10% {
                 opacity: 0.8;
-                transform: translateY(95vh) rotate(18deg) scale(1);
+                transform: rotate(36deg) scale(1);
             }
             50% {
-                transform: translateY(50vh) rotate(180deg) scale(0.9);
+                opacity: 0.9;
+                transform: rotate(180deg) scale(0.9);
             }
-            95% {
+            90% {
                 opacity: 0.8;
-                transform: translateY(5vh) rotate(342deg) scale(1);
+                transform: rotate(324deg) scale(1);
             }
             100% {
-                transform: translateY(-10vh) rotate(360deg) scale(0.8);
+                bottom: 100vh;
                 opacity: 0;
+                transform: rotate(360deg) scale(0.8);
             }
         }
         
@@ -1380,7 +1386,7 @@
                 options: [
                     { text: "Mind reading and telepathy", house: "ravenclaw" },
                     { text: "Speaking to animals", house: "hufflepuff" },
-                    { text: "Controlling the elements", house: "gryffindor" },
+                                       { text: "Controlling the elements", house: "gryffindor" },
                     { text: "Seeing into the future", house: "slytherin" }
                 ]
             }
@@ -1490,43 +1496,57 @@
         
         function createFloatingEmojis() {
             const harryPotterEmojis = [
-                '🦄', '🦄', '🦄', '🦄', '🦄', '🦄', '🪄', '🦉', '⚡', '🐍', '🦅', '🦁', '🦡', 
-                '📜', '🔮', '🎩', '⭐', '🌙', '🗲', '🧙‍♀️', '🧙‍♂️',
-                '🏰', '🚂', '🍺', '🐸', '🕯️', '📚', '🗝️', '💎',
-                '🦄', '🦄', '🦄', '🐺', '🦌', '🐘', '🐴', '✨', '💫', '🌟',
-                '🦄', '🦄'
+                '🦄', '🪄', '🦉', '⚡', '🐍', '🦅', '🦁', '🦡', 
+                '📜', '🦄', '🦄', '⭐', '🌙', '🧙‍♀️', '🧙‍♂️',
+                '🏰', '🚂', '🍺', '🐸', '🕯️', '🦄', '🗝️', '💎',
+                '🦄', '🦄', '🦄', '🦄', '✨', '💫', '🌟'
             ];
             
             const floatingContainer = document.getElementById('floatingEmojis');
             
-            function createFloatingEmoji() {
+            // Clear container completely
+            if (floatingContainer) {
+                floatingContainer.innerHTML = '';
+            }
+            
+            function createSingleEmoji() {
+                if (!document.getElementById('floatingEmojis')) return;
+                
                 const emoji = document.createElement('div');
                 emoji.className = 'floating-emoji';
                 emoji.textContent = harryPotterEmojis[Math.floor(Math.random() * harryPotterEmojis.length)];
                 
-                emoji.style.left = Math.random() * 100 + '%';
-                emoji.style.top = '100vh';
-                emoji.style.animationDelay = Math.random() * 2 + 's';
-                emoji.style.animationDuration = (12 + Math.random() * 6) + 's';
+                // Position horizontally only
+                emoji.style.left = Math.random() * 90 + 5 + '%'; // 5% to 95% to avoid edges
+                
+                // Set slower animation duration
+                const duration = 15 + Math.random() * 10; // 15-25 seconds (much slower)
+                emoji.style.animationDuration = duration + 's';
+                emoji.style.animationDelay = Math.random() * 5 + 's'; // Longer delays
                 
                 floatingContainer.appendChild(emoji);
                 
+                // Remove after animation
                 setTimeout(() => {
-                    if (emoji.parentNode) {
-                        emoji.parentNode.removeChild(emoji);
+                    if (emoji && emoji.parentNode === floatingContainer) {
+                        floatingContainer.removeChild(emoji);
                     }
-                }, 18000);
+                }, (duration + 5) * 1000); // Longer cleanup time
             }
             
-            // Create initial emojis
-            for (let i = 0; i < 15; i++) {
-                setTimeout(() => createFloatingEmoji(), i * 500);
+            // Create initial batch with longer delays
+            for (let i = 0; i < 6; i++) { // Fewer emojis
+                setTimeout(() => createSingleEmoji(), i * 2000); // 2 second intervals
             }
             
-            // Continue creating emojis
-            setInterval(() => {
-                createFloatingEmoji();
-            }, 1500);
+            // Continue creating with longer intervals
+            const emojiInterval = setInterval(() => {
+                if (document.getElementById('floatingEmojis')) {
+                    createSingleEmoji();
+                } else {
+                    clearInterval(emojiInterval);
+                }
+            }, 4000); // Every 4 seconds instead of 2.5
         }
         
         // Sorting functions
@@ -2008,14 +2028,15 @@
         }
 
         // Manual photo reload function for testing
-        async function reloadAllPhotos() {
-            console.log('🔄 Manually reloading all photos...');
-            await loadSavedPhotos();
-            showAchievement('🔄 Photos reloaded from storage! ✨');
-        }
 
-        // Initialize on load
-        window.addEventListener('load', initializeMagic);
+
+
+
+
+
+
+
+        window.addEventListener('load', initializeMagic);        // Initialize on load        }            showAchievement('🔄 Photos reloaded from storage! ✨');            await loadSavedPhotos();            console.log('🔄 Manually reloading all photos...');        async function reloadAllPhotos() {   
     </script>
 </body>
 </html>
