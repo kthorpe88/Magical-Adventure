@@ -771,6 +771,7 @@
     
     <div class="navigation">
         <button class="nav-btn" onclick="toggleMusic()" title="Toggle Background Music" id="musicBtn">🎵</button>
+        <button class="nav-btn" onclick="goToPhotos()" title="View Photo Album">📸</button>
         <button class="nav-btn" onclick="goHome()" title="Back to Start">🏠</button>
     </div>
     
@@ -1702,6 +1703,30 @@
             showScreen('sortingScreen');
         }
 
+        // Quick navigation to photo album
+        function goToPhotos() {
+            // Make sure we're on the content screen
+            showScreen('contentScreen');
+            
+            // Reveal the photo album section if not already revealed
+            const photoAlbumContent = document.getElementById('photoAlbum');
+            if (photoAlbumContent && !photoAlbumContent.classList.contains('revealed')) {
+                revealSection('photoAlbum');
+            }
+            
+            // Scroll to the photo album section
+            setTimeout(() => {
+                const photoSection = photoAlbumContent?.parentElement;
+                if (photoSection) {
+                    photoSection.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center' 
+                    });
+                    showAchievement('📸 Magical memories await! ✨');
+                }
+            }, 100);
+        }
+
         // SCREEN MANAGEMENT
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => {
@@ -2376,4 +2401,5 @@
             initializeMagic();
         });
     </script>
-</body></html>
+</body>
+</html>
